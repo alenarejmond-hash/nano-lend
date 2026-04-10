@@ -879,47 +879,12 @@ const FAQAccordion = ({ items }) => {
 // ОСНОВНАЯ КАРТОЧКА С ЛЕНДИНГОМ
 // ==========================================
 const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
-  const [isNameRevealed, setIsNameRevealed] = useState(false);
-  const [hackerName1, setHackerName1] = useState(() => CONTENT[lang].creator.name1.replace(/./g, () => HACKER_CHARS[Math.floor(Math.random() * HACKER_CHARS.length)]));
-  const [hackerName2, setHackerName2] = useState(() => CONTENT[lang].creator.name2.replace(/./g, () => HACKER_CHARS[Math.floor(Math.random() * HACKER_CHARS.length)]));
-  
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isUltraVisible, setIsUltraVisible] = useState(false);
   const [crownClicks, setCrownClicks] = useState(0);
   
   const scrollContainerRef = useRef(null);
   const ultraRef = useRef(null);
-
-  useEffect(() => {
-    let iteration = 0;
-    const target1 = CONTENT[lang].creator.name1;
-    const target2 = CONTENT[lang].creator.name2;
-    const maxLen = Math.max(target1.length, target2.length);
-    setIsNameRevealed(false);
-    const intervalMs = 40;
-    const totalSteps = 1000 / intervalMs; 
-    const step = maxLen / totalSteps;
-
-    const interval = setInterval(() => {
-      setHackerName1(target1.split("").map((letter, index) => {
-        if (index < iteration) return target1[index];
-        return HACKER_CHARS[Math.floor(Math.random() * HACKER_CHARS.length)];
-      }).join(""));
-
-      setHackerName2(target2.split("").map((letter, index) => {
-        if (index < iteration) return target2[index];
-        return HACKER_CHARS[Math.floor(Math.random() * HACKER_CHARS.length)];
-      }).join(""));
-
-      if (iteration >= maxLen) {
-        clearInterval(interval);
-        setIsNameRevealed(true);
-      }
-      iteration += step;
-    }, intervalMs);
-
-    return () => clearInterval(interval);
-  }, [lang]);
 
   // Логика скролла (Прогресс-бар и Параллакс)
   const handleScroll = (e) => {
@@ -968,7 +933,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-zinc-600/20 via-transparent to-transparent"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-black from-0% via-black/80 via-[15%] to-transparent to-[30%] pointer-events-none z-0 rounded-[2.5rem]"></div>
 
-        <BurnRevealImage src={CONTENT[lang].creator.bgImage} className="grayscale-[0.3]" burnColor="chrome" startBurn={isNameRevealed} />
+        <BurnRevealImage src={CONTENT[lang].creator.bgImage} className="grayscale-[0.3]" burnColor="chrome" startBurn={true} />
 
         <div className="relative z-10 flex flex-col h-full justify-between">
           <div className="flex justify-between items-start">
@@ -981,9 +946,9 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
 
           <div className="text-center pb-2">
             <h2 className="text-3xl sm:text-4xl leading-tight font-serif font-light mb-2 uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-zinc-400 via-white to-zinc-300 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
-              {hackerName1}
+              {CONTENT[lang].creator.name1}
               <br />
-              {hackerName2}
+              {CONTENT[lang].creator.name2}
             </h2>
             <div className="flex flex-col items-center gap-3 mt-3">
               <p className="font-serif text-[11px] text-zinc-300 italic tracking-wider max-w-[80%] mx-auto">
@@ -1230,7 +1195,6 @@ const App = () => {
   const [isOpen, setIsOpen] = useState(false); // Новое состояние: открыт ли лендинг
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
   const [glare, setGlare] = useState({ x: 50, y: 50, opacity: 0 });
-  const [sparks, setSparks] = useState([]);
   const [bgOffset, setBgOffset] = useState({ x: 0, y: 0 });
   const [showShare, setShowShare] = useState(false); // Состояние для модального окна
   const [showPwaPrompt, setShowPwaPrompt] = useState(false); // Состояние для iOS плашки PWA
@@ -1468,25 +1432,6 @@ const App = () => {
     
     setTimeout(() => { isFlippingRef.current = false; }, 1000);
 
-    const newSparks = Array.from({ length: 35 }).map((_, i) => {
-      const angle = (Math.PI * 2 * i) / 35 + (Math.random() * 0.5);
-      const distance = 80 + Math.random() * 100;
-      return {
-        id: Date.now() + i,
-        tx: Math.cos(angle) * distance + 'px',
-        ty: Math.sin(angle) * distance + 'px',
-        wx1: (Math.random() - 0.5) * 100 + 'px',
-        wy1: (Math.random() - 0.5) * 100 + 'px',
-        wx2: (Math.random() - 0.5) * 200 + 'px',
-        wy2: (Math.random() - 0.5) * 200 + 'px',
-        wx3: (Math.random() - 0.5) * 300 + 'px',
-        wy3: (Math.random() - 0.5) * 300 + 'px',
-        wt: (20 + Math.random() * 20) + 's',
-        size: Math.random() * 2.5 + 1.5 + 'px',
-      };
-    });
-    setSparks(newSparks);
-
     if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([30, 30, 40]); 
     setIsOpen(true);
   };
@@ -1494,7 +1439,6 @@ const App = () => {
   const handleClose = (e) => {
     if (e) e.stopPropagation();
     setIsOpen(false);
-    setSparks([]); 
     if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(20); 
   };
 
@@ -1613,7 +1557,7 @@ const App = () => {
       ></div>
 
       {/* КОНТЕЙНЕР ВИЗИТКИ (Адаптивный размер в зависимости от isOpen) */}
-      <div className="w-full flex justify-center relative z-40 items-center">
+      <div className="w-full h-full flex justify-center relative z-40 items-center">
         <div 
           ref={cardRef}
           className={`relative z-10 transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'w-full h-full sm:max-w-[480px] sm:h-[90vh] sm:rounded-[2.5rem]' : 'w-full aspect-[1/1.6] sm:aspect-[1/1.5] cursor-pointer group animate-float touch-none'}`}
@@ -1628,22 +1572,6 @@ const App = () => {
           onTouchMove={handlePointerMove}
           onTouchEnd={handlePointerLeave}
         >
-          {/* Искры (Magic Dust - Chrome) */}
-          {sparks.map(spark => (
-            <div
-              key={spark.id}
-              className="spark-particle"
-              style={{
-                '--tx': spark.tx, '--ty': spark.ty, '--wx1': spark.wx1, '--wy1': spark.wy1,
-                '--wx2': spark.wx2, '--wy2': spark.wy2, '--wx3': spark.wx3, '--wy3': spark.wy3,
-                '--wt': spark.wt, width: spark.size, height: spark.size,
-                left: '50%', top: '50%',
-                marginTop: '-' + (parseFloat(spark.size) / 2) + 'px',
-                marginLeft: '-' + (parseFloat(spark.size) / 2) + 'px'
-              }}
-            />
-          ))}
-
           {/* Обертка */}
           <div className="w-full h-full card-preserve-3d transition-transform duration-100 ease-out z-10 relative">
             <div className="relative w-full h-full card-preserve-3d">
