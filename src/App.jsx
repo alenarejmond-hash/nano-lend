@@ -344,6 +344,12 @@ const globalStyles = `
     overscroll-behavior: contain;
   }
   
+  /* Жесткая маска для обрезки выпирающих углов при 3D-вращении на мобилках */
+  .clip-corners {
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    mask-image: radial-gradient(white, black);
+  }
+  
   /* Кастомный элегантный скроллбар */
   .custom-scroll::-webkit-scrollbar { width: 4px; }
   .custom-scroll::-webkit-scrollbar-track { background: transparent; }
@@ -358,13 +364,6 @@ const globalStyles = `
     box-shadow: 0 0 25px rgba(var(--accent-main-rgb), 0.15), inset 0 0 10px rgba(var(--accent-main-rgb), 0.05);
   }
 
-  /* Анимация переливания жидкого металла для фона приложения */
-  @keyframes liquid-chrome {
-    0%, 100% { transform: scale(1) translate(0, 0) rotate(0deg); }
-    33% { transform: scale(1.1) translate(5%, 5%) rotate(5deg); }
-    66% { transform: scale(0.9) translate(-5%, -5%) rotate(-5deg); }
-  }
-
   /* Горизонтальный скролл отзывов */
   @keyframes marquee {
     0% { transform: translateX(0); }
@@ -374,14 +373,15 @@ const globalStyles = `
     animation: marquee 30s linear infinite;
   }
 
+  /* Анимация парения только по оси Y, чтобы не конфликтовать с 3D-наклоном */
   @keyframes float {
-    0% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
-    50% { transform: translateY(-15px) rotateX(2deg) rotateY(-2deg); }
-    100% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
   }
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
+
   .card-preserve-3d {
     transform-style: preserve-3d;
     -webkit-transform-style: preserve-3d;
@@ -389,8 +389,6 @@ const globalStyles = `
   .card-backface-hidden {
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
   }
   
   /* === ГЛИЧ ЭФФЕКТ ДЛЯ ПАСХАЛКИ === */
@@ -581,20 +579,6 @@ const TypewriterHeader = ({ text, className }) => {
       {displayedText}
       <span className="animate-pulse font-bold text-[var(--accent-main)] drop-shadow-[0_0_8px_rgba(var(--accent-main-rgb),0.8)]">_</span>
     </h3>
-  );
-};
-
-// ==========================================
-// 🪄 КОМПОНЕНТ ФОНА (ЧИСТЫЙ)
-// ==========================================
-const LiquidRevealImage = ({ src, className, style, imgClassName = "" }) => {
-  return (
-    <div className={`absolute inset-0 pointer-events-none rounded-[2.5rem] overflow-hidden ${className}`} style={{ ...style, clipPath: 'inset(0 round 2.5rem)', WebkitClipPath: 'inset(0 round 2.5rem)' }}>
-      <div 
-        className={`absolute inset-0 bg-cover bg-center w-full h-full ${imgClassName}`}
-        style={{ backgroundImage: `url(${src})` }}
-      />
-    </div>
   );
 };
 
@@ -794,7 +778,7 @@ const FAQAccordion = ({ items }) => {
 // ==========================================
 // ОСНОВНАЯ КАРТОЧКА С ЛЕНДИНГОМ
 // ==========================================
-const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
+const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
   const [isUltraVisible, setIsUltraVisible] = useState(false);
   const [crownClicks, setCrownClicks] = useState(0);
   
@@ -832,7 +816,6 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
     }
   };
 
-  // Все тарифы используют этот единый "светящийся" дизайн
   const renderTariff = (Icon, title, desc, ref = null) => (
     <div ref={ref} className="p-1 rounded-2xl bg-gradient-to-r from-[rgba(var(--bg-card-rgb),0.4)] via-[rgba(var(--accent-main-rgb),0.5)] to-[rgba(var(--bg-card-rgb),0.4)] shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.3)]">
       <div className="bg-[rgba(var(--bg-card-rgb),0.95)] backdrop-blur-xl p-5 rounded-xl border border-[rgba(var(--accent-main-rgb),0.5)] flex flex-col transition-all hover:bg-[rgba(var(--bg-card-rgb),0.8)]">
@@ -853,18 +836,57 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
   return (
     <>
       {/* ========================================================================= */}
-      {/* 1. ЗАКРЫТОЕ СОСТОЯНИЕ (ЛИЦЕВАЯ СТОРОНА) - ОБЪЕМНОЕ СТЕКЛО */}
+      {/* 1. ЗАКРЫТОЕ СОСТОЯНИЕ (ЛИЦЕВАЯ СТОРОНА) - 3D И ЖИДКОЕ СТЕКЛО */}
       {/* ========================================================================= */}
-      <div className={`absolute inset-0 w-full h-full card-backface-hidden rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5),inset_0_4px_15px_rgba(255,255,255,0.1),inset_0_-4px_20px_rgba(0,0,0,0.6),inset_2px_0_10px_rgba(255,255,255,0.05),inset_-2px_0_10px_rgba(0,0,0,0.4)] border-t-[1.5px] border-l-[1.5px] border-[rgba(255,255,255,0.15)] border-b-[1.5px] border-r-[1.5px] border-b-[rgba(0,0,0,0.4)] border-r-[rgba(0,0,0,0.4)] overflow-hidden isolation-isolate bg-[var(--bg-card)] text-white flex flex-col p-6 group-hover:shadow-[0_30px_60px_rgba(0,0,0,0.6),inset_0_4px_15px_rgba(255,255,255,0.15),inset_0_-4px_20px_rgba(0,0,0,0.6)] transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'opacity-0 pointer-events-none scale-110' : 'opacity-100 scale-100'}`}>
-        
-        <div className="absolute inset-0 bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-grad-mid)]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[rgba(var(--accent-main-rgb),0.15)] via-transparent to-transparent mix-blend-screen"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-grad-dark)] from-0% via-[rgba(var(--bg-grad-dark-rgb),0.8)] via-[15%] to-transparent to-[30%] pointer-events-none z-0 rounded-[2.5rem]"></div>
+      <div 
+        className={`absolute inset-0 w-full h-full transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'opacity-0 pointer-events-none scale-110' : 'opacity-100 scale-100'}`}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        {/* BACKGROUND & IMAGE (Clipped to prevent corners from sticking out) */}
+        <div className="absolute inset-0 w-full h-full rounded-[2.5rem] overflow-hidden clip-corners shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-[var(--bg-card)] border-t-[1.5px] border-l-[1.5px] border-[rgba(255,255,255,0.15)] border-b-[1.5px] border-r-[1.5px] border-b-[rgba(0,0,0,0.4)] border-r-[rgba(0,0,0,0.4)]">
+          <div className="absolute inset-0 bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-grad-mid)]"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[rgba(var(--accent-main-rgb),0.15)] via-transparent to-transparent mix-blend-screen"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-grad-dark)] from-0% via-[rgba(var(--bg-grad-dark-rgb),0.8)] via-[15%] to-transparent to-[30%] pointer-events-none z-0"></div>
 
-        <LiquidRevealImage src={CONTENT[lang].creator.bgImage} className="grayscale-[0.3]" />
+          {/* PARALLAX IMAGE BACKGROUND (Отвечает за глубину картинки) */}
+          <div 
+            className="absolute inset-0 w-full h-full bg-cover bg-center grayscale-[0.3]"
+            style={{ 
+              backgroundImage: `url(${CONTENT[lang].creator.bgImage})`,
+              transform: isOpen ? 'scale(1)' : `scale(1.15) translate(${rotate.y * 0.15}px, ${-rotate.x * 0.15}px)`,
+              transition: 'transform 0.1s linear'
+            }} 
+          />
+        </div>
 
-        <div className="relative z-10 flex flex-col h-full justify-between">
-          <div className="flex justify-between items-start">
+        {/* DYNAMIC LIQUID GLASS OVERLAY (Жидкое стекло с динамическими тенями от наклона) */}
+        <div 
+          className="absolute inset-0 w-full h-full pointer-events-none rounded-[2.5rem] clip-corners z-20"
+          style={{
+            background: `
+              radial-gradient(farthest-corner circle at ${glare.x}% ${glare.y}%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 60%),
+              linear-gradient(${135 + rotate.x + rotate.y}deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 70%)
+            `,
+            boxShadow: `
+              inset ${rotate.y * 1.5}px ${-rotate.x * 1.5}px 30px rgba(255, 255, 255, 0.15),
+              inset ${-rotate.y * 1.5}px ${rotate.x * 1.5}px 40px rgba(var(--accent-main-rgb), 0.2),
+              inset 0 0 20px rgba(0,0,0,0.5)
+            `,
+            opacity: Math.max(0.5, glare.opacity), 
+            transition: 'opacity 0.3s ease-out'
+          }}
+        />
+
+        {/* 3D CONTENT (Popped out in Z-space, текст буквально парит над стеклом) */}
+        <div 
+          className="absolute inset-0 z-30 flex flex-col h-full justify-between p-6 pointer-events-none" 
+          style={{ 
+            transform: isOpen ? 'translateZ(0px)' : `translateZ(60px) translate(${-rotate.y * 0.1}px, ${rotate.x * 0.1}px)`, 
+            transition: glare.opacity > 0 && !isOpen ? 'transform 0.1s linear' : 'transform 0.5s ease-out',
+            transformStyle: 'preserve-3d' 
+          }}
+        >
+          <div className="flex justify-between items-start pointer-events-auto">
             <div onClick={handleCrownClick} className="bg-[rgba(var(--bg-grad-dark-rgb),0.8)] backdrop-blur-md px-4 py-2 rounded-full border border-[rgba(var(--accent-main-rgb),0.3)] flex items-center gap-2 cursor-pointer active:scale-95 transition-transform">
               <Crown className="w-4 h-4 text-[var(--accent-main)] drop-shadow-[0_0_5px_rgba(var(--accent-main-rgb),0.8)]" />
               <span className="text-xs font-serif tracking-widest uppercase text-slate-200">{CONTENT[lang].creator.badge}</span>
@@ -872,7 +894,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
             <Code2 className="w-8 h-8 text-[var(--accent-main)] drop-shadow-[0_0_10px_rgba(var(--accent-main-rgb),0.5)]" />
           </div>
 
-          <div className="text-center pb-2">
+          <div className="text-center pb-2 pointer-events-auto">
             <h2 className="text-3xl sm:text-4xl leading-tight font-serif font-light mb-2 uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-300 to-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
               {CONTENT[lang].creator.name1}
               <br />
@@ -894,8 +916,19 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
       {/* ========================================================================= */}
       {/* 2. ОТКРЫТОЕ СОСТОЯНИЕ (СКРОЛЛ-ЛЕНДИНГ) */}
       {/* ========================================================================= */}
-      <div className={`absolute inset-0 w-full h-full rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col text-white transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] bg-[var(--bg-grad-mid)] border-[rgba(var(--accent-main-rgb),0.4)] border ${isOpen ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto' : 'opacity-0 translate-y-10 scale-95 pointer-events-none'}`}>
+      <div className={`absolute inset-0 w-full h-full rounded-[2.5rem] clip-corners shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-[var(--bg-grad-mid)] border-[rgba(var(--accent-main-rgb),0.4)] border flex flex-col text-white transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto' : 'opacity-0 translate-y-10 scale-95 pointer-events-none'}`}>
         
+        {/* === ФОНОВАЯ НАДПИСЬ PREMIUM (ФИКСИРОВАННАЯ И ОБЪЕМНАЯ) === */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[25vw] font-black pointer-events-none z-0 select-none tracking-tighter opacity-80" 
+             style={{
+               background: `linear-gradient(180deg, rgba(var(--accent-main-rgb), 0.08) 0%, rgba(var(--accent-main-rgb), 0.01) 100%)`,
+               WebkitBackgroundClip: 'text',
+               WebkitTextFillColor: 'transparent',
+               filter: 'drop-shadow(0px 20px 30px rgba(0,0,0,0.8))'
+             }}>
+          PREMIUM
+        </div>
+
         {/* ПРОГРЕСС БАР СВЕРХУ */}
         <div className="absolute top-0 left-0 h-1 bg-gradient-to-r from-[var(--accent-light)] via-[var(--accent-main)] to-[var(--accent-main)] z-50 transition-all duration-300 shadow-[0_0_10px_rgba(var(--accent-main-rgb),0.8)]" style={{ width: 'var(--scroll-progress, 0%)' }}></div>
 
@@ -926,11 +959,6 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
           onScroll={handleScroll}
           ref={scrollContainerRef}
         >
-          {/* ПАРАЛЛАКС ЗАГОЛОВОК НА ФОНЕ */}
-          <div className="absolute top-[10%] left-1/2 -translate-x-1/2 text-[20vw] font-black text-[rgba(var(--accent-main-rgb),0.04)] pointer-events-none z-0 select-none tracking-tighter" style={{ transform: 'translate(-50%, calc(var(--scroll-y, 0px) * 0.4))' }}>
-            PREMIUM
-          </div>
-          
           {/* 1. ФИЛОСОФИЯ */}
           <div className="flex flex-col items-center text-center mt-2 animate-in slide-in-from-bottom-4 duration-700 fade-in delay-100 relative z-10">
             <div className="w-12 h-12 rounded-full glass-card flex items-center justify-center mb-4">
@@ -940,12 +968,12 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
             <p className="font-serif text-[12px] text-slate-300 leading-relaxed glass-card p-5 rounded-2xl w-full mb-5">
               {CONTENT[lang].views.profile.desc}
             </p>
-            <MagneticWrapper onClick={() => window.open(CONTENT[lang].creator.websiteLink, '_blank')} className="cursor-pointer">
+            <div onClick={() => window.open(CONTENT[lang].creator.websiteLink, '_blank')} className="cursor-pointer active:scale-95 transition-transform">
               <div className="bg-[rgba(var(--bg-card-rgb),0.5)] border border-[rgba(var(--accent-light-rgb),0.3)] hover:border-[rgba(var(--accent-main-rgb),0.5)] text-slate-200 text-[10px] uppercase tracking-[0.2em] py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] group">
                 <Globe className="w-4 h-4 text-[var(--accent-main)] group-hover:animate-pulse drop-shadow-[0_0_5px_rgba(var(--accent-main-rgb),0.5)]" />
                 {CONTENT[lang].creator.websiteText}
               </div>
-            </MagneticWrapper>
+            </div>
           </div>
 
           <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.4)] to-transparent relative z-10"></div>
@@ -965,7 +993,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
             <BeforeAfterSlider texts={CONTENT[lang].storytelling.comparison} />
           </div>
 
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.4)] to-transparent relative z-10"></div>
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-light-rgb),0.2)] to-transparent relative z-10"></div>
 
           {/* БЛОК: ПУТЬ КЛИЕНТА (Таймлайн) */}
           <div className="flex flex-col animate-in slide-in-from-bottom-4 duration-700 fade-in delay-200 relative z-10">
@@ -973,7 +1001,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
             <ProcessTimeline steps={CONTENT[lang].storytelling.timeline.steps} />
           </div>
 
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.4)] to-transparent relative z-10"></div>
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.2)] to-transparent relative z-10"></div>
 
           {/* 2. ТАРИФЫ (ВСЕ СВЕТЯТСЯ КАК ULTRA) */}
           <div className="flex flex-col gap-4 animate-in slide-in-from-bottom-4 duration-700 fade-in delay-[300ms] relative z-10">
@@ -1004,7 +1032,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
           {/* 4. ЛИД-МАГНИТ С ИНТЕРАКТИВНЫМ СКРЕТЧ-СЛОЕМ */}
           <div className="flex flex-col items-center text-center animate-in slide-in-from-bottom-4 duration-700 fade-in delay-[600ms] relative z-10">
             <div className="w-14 h-14 rounded-full glass-card flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.15)]">
-              <Gift className="w-7 h-7 text-[var(--accent-main)] drop-shadow-[0_0_10px_rgba(var(--accent-main-rgb),0.8)] animate-bounce" />
+              <Gift className="w-7 h-7 text-[var(--accent-light)] drop-shadow-[0_0_10px_rgba(var(--accent-main-rgb),0.8)] animate-bounce" />
             </div>
             <TypewriterHeader text={CONTENT[lang].leadMagnet.title} className="text-2xl font-serif font-light text-white tracking-wider mb-3" />
             
@@ -1181,7 +1209,7 @@ const App = () => {
 
   useEffect(() => {
     const handleGlobalMove = (e) => {
-      if (isFlippingRef.current) return; // ПРЕДОТВРАЩАЕТ ЛАГИ ПРИ ОТКРЫТИИ
+      if (isFlippingRef.current) return; 
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
       const x = (clientX / window.innerWidth - 0.5) * 80;
@@ -1288,8 +1316,9 @@ const App = () => {
     const y = clientY - rect.top;
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    const rotateX = ((y - centerY) / centerY) * -25;
-    const rotateY = ((x - centerX) / centerX) * 25;
+    // Ограничиваем угол наклона, чтобы было плавно и не ломало верстку
+    const rotateX = ((y - centerY) / centerY) * -15; 
+    const rotateY = ((x - centerX) / centerX) * 15;
     const glareX = (x / rect.width) * 100;
     const glareY = (y / rect.height) * 100;
     
@@ -1303,7 +1332,6 @@ const App = () => {
     setGlare(prev => ({ ...prev, opacity: 0 }));
   };
 
-  // Премиальные ASMR Звуки
   const playASMRSound = (type = 'open') => {
     try {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -1336,7 +1364,6 @@ const App = () => {
         osc.start(ctx.currentTime);
         osc.stop(ctx.currentTime + 0.15);
       } else if (type === 'shake') {
-        // Мягкий и благородный перелив
         osc.type = 'sine';
         osc.frequency.setValueAtTime(1000, ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.5);
@@ -1499,55 +1526,27 @@ const App = () => {
       ></div>
 
       {/* КОНТЕЙНЕР ВИЗИТКИ */}
-      <div className="w-full h-full flex justify-center relative z-40 items-center">
-        <div 
-          ref={cardRef}
-          className={`relative z-10 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'w-full h-full sm:max-w-[480px] sm:h-[90vh] sm:rounded-[2.5rem]' : 'w-full aspect-[1/1.6] sm:aspect-[1/1.5] cursor-pointer group animate-float touch-none'}`}
-          style={{ 
-            perspective: '1500px', 
-            maxWidth: isOpen ? '100%' : 'min(22rem, 85vw, 55vh)',
-            transform: isOpen ? 'translateY(0) scale(1) rotateX(0) rotateY(0) translateZ(0)' : `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg) translateZ(0)`,
-            willChange: 'transform, width, height, border-radius'
-          }}
-          onClick={!isOpen ? handleOpen : undefined}
-          onMouseMove={handlePointerMove}
-          onMouseLeave={handlePointerLeave}
-          onTouchMove={handlePointerMove}
-          onTouchEnd={handlePointerLeave}
-        >
-          {/* Обертка */}
-          <div className="w-full h-full card-preserve-3d transition-transform duration-100 ease-out z-10 relative">
-            <div className="relative w-full h-full card-preserve-3d">
-              
-              {!isOpen && (
-                <div 
-                  className="absolute inset-0 rounded-[2.5rem] pointer-events-none sm:hidden card-backface-hidden" 
-                  style={{ boxShadow: `0 30px 60px rgba(0,0,0,0.5)` }} 
-                />
-              )}
-
-              <CreatorCard lang={lang} isOpen={isOpen} onClose={handleClose} onEasterEgg={triggerEasterEgg} rotate={rotate} />
-
-              {/* Блик виден только на закрытой карточке */}
-              {!isOpen && (
-                <div 
-                  className="absolute inset-0 w-full h-full rounded-[2.5rem] pointer-events-none transition-opacity duration-300 card-backface-hidden"
-                  style={{
-                    background: `
-                      radial-gradient(farthest-corner circle at ${glare.x}% ${glare.y}%, rgba(255, 255, 255, 0.2) 10%, rgba(255, 255, 255, 0) 60%),
-                      linear-gradient(${glare.x + glare.y}deg, rgba(255,255,255,0) 30%, rgba(255, 255, 255, 0.1) 50%, rgba(255,255,255,0) 70%)
-                    `,
-                    boxShadow: `
-                      inset ${rotate.y}px ${-rotate.x}px 20px rgba(255, 255, 255, 0.1),
-                      inset ${-rotate.y * 1.5}px ${rotate.x * 1.5}px 40px rgba(var(--accent-main-rgb), 0.1)
-                    `,
-                    mixBlendMode: 'overlay',
-                    opacity: glare.opacity ? Math.max(0.4, glare.opacity) : 0,
-                    zIndex: 50,
-                  }}
-                />
-              )}
-            </div>
+      <div 
+        ref={cardRef}
+        className={`relative z-10 transition-[max-width,height,width] duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'w-full h-full sm:max-w-[480px] sm:h-[90vh] sm:rounded-[2.5rem]' : 'w-full aspect-[1/1.6] sm:aspect-[1/1.5] cursor-pointer group touch-none'} ${!isOpen && glare.opacity === 0 ? 'animate-float' : ''}`}
+        style={{ maxWidth: isOpen ? '100%' : 'min(22rem, 85vw, 55vh)' }}
+        onClick={!isOpen ? handleOpen : undefined}
+        onMouseMove={handlePointerMove}
+        onMouseLeave={handlePointerLeave}
+        onTouchMove={handlePointerMove}
+        onTouchEnd={handlePointerLeave}
+      >
+        {/* Внутренний контейнер для чистого 3D-наклона */}
+        <div className="w-full h-full" style={{ perspective: '1500px' }}>
+          <div 
+            className="w-full h-full relative"
+            style={{ 
+              transform: isOpen ? 'rotateX(0) rotateY(0)' : `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
+              transition: glare.opacity > 0 && !isOpen ? 'transform 0.1s linear' : 'transform 0.7s ease-[cubic-bezier(0.23,1,0.32,1)]',
+              transformStyle: 'preserve-3d'
+            }}
+          >
+            <CreatorCard lang={lang} isOpen={isOpen} onClose={handleClose} onEasterEgg={triggerEasterEgg} rotate={rotate} glare={glare} />
           </div>
         </div>
       </div>
