@@ -546,7 +546,7 @@ const TooltipDot = ({ text }) => {
 };
 
 // ==========================================
-// ЭФФЕКТ ПЕЧАТАЮЩЕЙСЯ МАШИНКИ (С ХАКЕРСКИМ КУРСОРОМ)
+// ЭФФЕКТ ПЕЧАТАЮЩЕЙСЯ МАШИНКИ
 // ==========================================
 const TypewriterHeader = ({ text, className }) => {
   const [displayedText, setDisplayedText] = useState("");
@@ -859,29 +859,11 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
           />
         </div>
 
-        {/* DYNAMIC LIQUID GLASS OVERLAY (Жидкое стекло с динамическими тенями от наклона) */}
+        {/* 3D CONTENT (Текст теперь находится ПОД линзой) */}
         <div 
-          className="absolute inset-0 w-full h-full pointer-events-none rounded-[2.5rem] clip-corners z-20"
-          style={{
-            background: `
-              radial-gradient(farthest-corner circle at ${glare.x}% ${glare.y}%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 60%),
-              linear-gradient(${135 + rotate.x + rotate.y}deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 70%)
-            `,
-            boxShadow: `
-              inset ${rotate.y * 1.5}px ${-rotate.x * 1.5}px 30px rgba(255, 255, 255, 0.15),
-              inset ${-rotate.y * 1.5}px ${rotate.x * 1.5}px 40px rgba(var(--accent-main-rgb), 0.2),
-              inset 0 0 20px rgba(0,0,0,0.5)
-            `,
-            opacity: Math.max(0.5, glare.opacity), 
-            transition: 'opacity 0.3s ease-out'
-          }}
-        />
-
-        {/* 3D CONTENT (Popped out in Z-space, текст буквально парит над стеклом) */}
-        <div 
-          className="absolute inset-0 z-30 flex flex-col h-full justify-between p-6 pointer-events-none" 
+          className="absolute inset-0 z-20 flex flex-col h-full justify-between p-6 pointer-events-none" 
           style={{ 
-            transform: isOpen ? 'translateZ(0px)' : `translateZ(60px) translate(${-rotate.y * 0.1}px, ${rotate.x * 0.1}px)`, 
+            transform: isOpen ? 'translateZ(0px)' : `translateZ(20px) translate(${-rotate.y * 0.1}px, ${rotate.x * 0.1}px)`, 
             transition: glare.opacity > 0 && !isOpen ? 'transform 0.1s linear' : 'transform 0.5s ease-out',
             transformStyle: 'preserve-3d' 
           }}
@@ -911,6 +893,27 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
             </div>
           </div>
         </div>
+
+        {/* DYNAMIC LIQUID GLASS OVERLAY (Линза ТЕПЕРЬ СВЕРХУ текста) */}
+        {!isOpen && (
+          <div 
+            className="absolute inset-0 w-full h-full pointer-events-none rounded-[2.5rem] clip-corners z-30"
+            style={{
+              transform: 'translateZ(25px)',
+              background: `
+                radial-gradient(farthest-corner circle at ${glare.x}% ${glare.y}%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 60%),
+                linear-gradient(${135 + rotate.x + rotate.y}deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 70%)
+              `,
+              boxShadow: `
+                inset ${rotate.y * 1.5}px ${-rotate.x * 1.5}px 30px rgba(255, 255, 255, 0.15),
+                inset ${-rotate.y * 1.5}px ${rotate.x * 1.5}px 40px rgba(var(--accent-main-rgb), 0.2),
+                inset 0 0 20px rgba(0,0,0,0.5)
+              `,
+              opacity: Math.max(0.5, glare.opacity), 
+              transition: 'opacity 0.3s ease-out'
+            }}
+          />
+        )}
       </div>
 
       {/* ========================================================================= */}
@@ -968,12 +971,12 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
             <p className="font-serif text-[12px] text-slate-300 leading-relaxed glass-card p-5 rounded-2xl w-full mb-5">
               {CONTENT[lang].views.profile.desc}
             </p>
-            <div onClick={() => window.open(CONTENT[lang].creator.websiteLink, '_blank')} className="cursor-pointer active:scale-95 transition-transform">
+            <MagneticWrapper onClick={() => window.open(CONTENT[lang].creator.websiteLink, '_blank')} className="cursor-pointer active:scale-95 transition-transform">
               <div className="bg-[rgba(var(--bg-card-rgb),0.5)] border border-[rgba(var(--accent-light-rgb),0.3)] hover:border-[rgba(var(--accent-main-rgb),0.5)] text-slate-200 text-[10px] uppercase tracking-[0.2em] py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] group">
                 <Globe className="w-4 h-4 text-[var(--accent-main)] group-hover:animate-pulse drop-shadow-[0_0_5px_rgba(var(--accent-main-rgb),0.5)]" />
                 {CONTENT[lang].creator.websiteText}
               </div>
-            </div>
+            </MagneticWrapper>
           </div>
 
           <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.4)] to-transparent relative z-10"></div>
@@ -1316,9 +1319,8 @@ const App = () => {
     const y = clientY - rect.top;
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    // Ограничиваем угол наклона, чтобы было плавно и не ломало верстку
-    const rotateX = ((y - centerY) / centerY) * -15; 
-    const rotateY = ((x - centerX) / centerX) * 15;
+    const rotateX = ((y - centerY) / centerY) * -35; 
+    const rotateY = ((x - centerX) / centerX) * 35;
     const glareX = (x / rect.width) * 100;
     const glareY = (y / rect.height) * 100;
     
