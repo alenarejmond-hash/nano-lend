@@ -18,15 +18,15 @@ const hexToRgb = (hex) => {
 // ==========================================
 const COLORS = {
   // ⬛ ТЕМНЫЕ ФОНОВЫЕ ЦВЕТА
-  bgMain: '#120A0E',        // Основной фон страницы (глубокий теплый черный)
-  bgCard: '#351E28',        // Фон лицевой визитки (роскошный винный/сливовый)
-  bgModal: '#0A0508',       // Самые глубокие тени
-  bgGradMid: '#24141B',     // Средний цвет для лендинга (чистый переход)
-  bgGradDark: '#170D12',    // Низ лендинга
+  bgMain: '#121619',        // Основной фон страницы (снаружи визитки)
+  bgCard: '#22282b',        // Фон лицевой визитки
+  bgModal: '#0e1113',       // Самые глубокие тени
+  bgGradMid: '#1a1f22',     // Средний графитовый цвет для всего лендинга
+  bgGradDark: '#1a1f22',    // Низ лендинга
   
   // 🌟 АКЦЕНТНЫЕ ЦВЕТА (Кнопки, текст, иконки, свечения)
-  accentMain: '#D4AF37',    // Главное золото (дорогое, благородное)
-  accentLight: '#F9E596'    // Светлое шампанское для бликов без грязи
+  accentMain: '#2dd4d4',    // Главный бирюзовый неон
+  accentLight: '#ffffff'    // Чистый белый для текста на кнопках
 };
 
 // ==========================================
@@ -426,6 +426,35 @@ const globalStyles = `
     border-radius: 2px;
     animation: equalize 1s infinite ease-in-out;
   }
+
+  /* === ПРЕМИАЛЬНЫЕ ПАРЯЩИЕ ЧАСТИЦЫ ДЛЯ ЧИСТОГО ФОНА === */
+  .floating-particle {
+    position: absolute;
+    bottom: -10vh;
+    background: var(--accent-main);
+    border-radius: 50%;
+    box-shadow: 0 0 15px 2px var(--accent-main);
+    opacity: 0;
+    animation: float-up infinite linear;
+  }
+  @keyframes float-up {
+    0% { transform: translateY(0) scale(0); opacity: 0; }
+    20% { opacity: 0.6; transform: translateY(-20vh) scale(1); }
+    80% { opacity: 0.6; transform: translateY(-80vh) scale(1); }
+    100% { transform: translateY(-110vh) scale(0); opacity: 0; }
+  }
+  .particle-1 { left: 10%; width: 4px; height: 4px; animation-duration: 15s; animation-delay: 0s; }
+  .particle-2 { left: 25%; width: 2px; height: 2px; animation-duration: 22s; animation-delay: 5s; }
+  .particle-3 { left: 45%; width: 3px; height: 3px; animation-duration: 18s; animation-delay: 2s; }
+  .particle-4 { left: 65%; width: 5px; height: 5px; animation-duration: 25s; animation-delay: 8s; }
+  .particle-5 { left: 85%; width: 2px; height: 2px; animation-duration: 16s; animation-delay: 1s; }
+  .particle-6 { left: 15%; width: 3px; height: 3px; animation-duration: 20s; animation-delay: 6s; }
+  .particle-7 { left: 35%; width: 4px; height: 4px; animation-duration: 14s; animation-delay: 9s; }
+  .particle-8 { left: 55%; width: 2px; height: 2px; animation-duration: 21s; animation-delay: 3s; }
+  .particle-9 { left: 75%; width: 3px; height: 3px; animation-duration: 17s; animation-delay: 7s; }
+  .particle-10 { left: 95%; width: 5px; height: 5px; animation-duration: 23s; animation-delay: 4s; }
+  .particle-11 { left: 5%; width: 2px; height: 2px; animation-duration: 19s; animation-delay: 10s; }
+  .particle-12 { left: 50%; width: 4px; height: 4px; animation-duration: 24s; animation-delay: 11s; }
 `;
 
 // ==========================================
@@ -764,13 +793,119 @@ const FAQAccordion = ({ items }) => {
               </div>
             </button>
             <div className={`transition-[max-height,opacity] duration-500 ease-in-out ${isOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
-              <p className="px-4 pb-4 text-[10px] text-slate-300 leading-relaxed border-t border-[rgba(var(--accent-main-rgb),0.2)] pt-3 mt-1">
-                {item.a}
-              </p>
-            </div>
+            <p className="px-4 pb-4 text-[10px] text-slate-300 leading-relaxed border-t border-[rgba(var(--accent-main-rgb),0.2)] pt-3 mt-1">
+              {item.a}
+            </p>
           </div>
-        );
-      })}
+        </div>
+      );
+    })}
+  </div>
+);
+};
+
+// ==========================================
+// 3D КАРУСЕЛЬ ТАРИФОВ (COVER FLOW)
+// ==========================================
+const TariffCarousel = ({ tariffs }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(null);
+
+  const handleStart = (clientX) => setTouchStart(clientX);
+  const handleEnd = (clientX) => {
+    if (touchStart === null) return;
+    const diff = touchStart - clientX;
+    if (diff > 50) setActiveIndex(Math.min(tariffs.length - 1, activeIndex + 1));
+    if (diff < -50) setActiveIndex(Math.max(0, activeIndex - 1));
+    setTouchStart(null);
+  };
+
+  return (
+    <div className="w-full flex flex-col items-center">
+      <div 
+        className="relative w-full h-[240px] flex items-center justify-center overflow-visible"
+        style={{ perspective: '1200px', touchAction: 'pan-y' }}
+        onTouchStart={(e) => handleStart(e.touches[0].clientX)}
+        onTouchEnd={(e) => handleEnd(e.changedTouches[0].clientX)}
+        onMouseDown={(e) => handleStart(e.clientX)}
+        onMouseUp={(e) => handleEnd(e.clientX)}
+        onMouseLeave={(e) => { if(touchStart !== null) handleEnd(e.clientX); }}
+      >
+        {tariffs.map((tariff, idx) => {
+          const offset = idx - activeIndex;
+          const absOffset = Math.abs(offset);
+          const isActive = offset === 0;
+          
+          const bgGradient = isActive 
+            ? 'linear-gradient(to right, rgba(var(--bg-card-rgb),0.4), rgba(var(--accent-main-rgb),0.8), rgba(var(--bg-card-rgb),0.4))'
+            : 'linear-gradient(to right, rgba(var(--bg-card-rgb),0.4), rgba(var(--accent-main-rgb),0.3), rgba(var(--bg-card-rgb),0.4))';
+          
+          return (
+            <div 
+              key={idx}
+              ref={tariff.ref}
+              className="absolute w-[85%] sm:w-[75%] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] cursor-pointer"
+              style={{
+                transform: `translateX(${offset * 60}%) scale(${1 - absOffset * 0.15}) rotateY(${-offset * 25}deg) translateZ(${-absOffset * 60}px)`,
+                zIndex: 10 - absOffset,
+                opacity: 1 - absOffset * 0.4,
+                pointerEvents: isActive ? 'auto' : 'none'
+              }}
+              onClick={(e) => { e.stopPropagation(); if(!isActive) setActiveIndex(idx); }}
+            >
+              <div 
+                className="p-[1.5px] rounded-2xl shadow-2xl transition-all duration-500"
+                style={{ 
+                  background: bgGradient,
+                  boxShadow: isActive ? `0 0 40px rgba(var(--accent-main-rgb), 0.5), inset 0 0 20px rgba(var(--accent-main-rgb), 0.3)` : `0 0 15px rgba(var(--accent-main-rgb), 0.1)`
+                }}
+              >
+                <div className="bg-[rgba(var(--bg-card-rgb),0.95)] backdrop-blur-xl p-6 rounded-xl h-full flex flex-col transition-all duration-500 min-h-[180px]">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div 
+                      className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500 shrink-0"
+                      style={{
+                        backgroundColor: isActive ? `rgba(var(--accent-main-rgb), 0.15)` : `rgba(var(--accent-main-rgb), 0.05)`,
+                        border: isActive ? `1px solid rgba(var(--accent-main-rgb), 0.6)` : `1px solid rgba(var(--accent-main-rgb), 0.3)`,
+                        boxShadow: isActive ? `0 0 20px rgba(var(--accent-main-rgb), 0.4)` : `0 0 10px rgba(var(--accent-main-rgb), 0.1)`
+                      }}
+                    >
+                      <tariff.icon 
+                        className="w-6 h-6 transition-all duration-500 text-[var(--accent-main)]" 
+                        style={{ 
+                          filter: isActive ? `drop-shadow(0 0 8px rgba(var(--accent-main-rgb), 0.8))` : 'none'
+                        }} 
+                      />
+                    </div>
+                    <div className="flex items-center w-full min-w-0">
+                      <h3 
+                        className="text-xl font-serif font-bold tracking-wider transition-all duration-500 truncate"
+                        style={{
+                          color: isActive ? 'var(--accent-main)' : 'white',
+                          textShadow: isActive ? '0 0 15px rgba(var(--accent-main-rgb),0.6)' : '0 0 5px rgba(255,255,255,0.3)'
+                        }}
+                      >
+                        {tariff.title}
+                      </h3>
+                      {tariff.tooltip && <div className="ml-2 shrink-0"><TooltipDot text={tariff.tooltip} /></div>}
+                    </div>
+                  </div>
+                  <p className="font-serif text-[12px] sm:text-[13px] text-slate-300 leading-relaxed text-left opacity-90 line-clamp-4">{tariff.desc}</p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="flex justify-center gap-3 mt-6">
+        {tariffs.map((_, idx) => (
+          <button
+            key={idx}
+            onClick={(e) => { e.stopPropagation(); setActiveIndex(idx); }}
+            className={`h-2 rounded-full transition-all duration-500 ${activeIndex === idx ? 'bg-[var(--accent-main)] w-8 shadow-[0_0_10px_rgba(var(--accent-main-rgb),0.8)]' : 'bg-[rgba(var(--accent-main-rgb),0.3)] w-2 hover:bg-[rgba(var(--accent-main-rgb),0.6)]'}`}
+          />
+        ))}
+      </div>
     </div>
   );
 };
@@ -816,22 +951,12 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
     }
   };
 
-  const renderTariff = (Icon, title, desc, ref = null) => (
-    <div ref={ref} className="p-1 rounded-2xl bg-gradient-to-r from-[rgba(var(--bg-card-rgb),0.4)] via-[rgba(var(--accent-main-rgb),0.5)] to-[rgba(var(--bg-card-rgb),0.4)] shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.3)]">
-      <div className="bg-[rgba(var(--bg-card-rgb),0.95)] backdrop-blur-xl p-5 rounded-xl border border-[rgba(var(--accent-main-rgb),0.5)] flex flex-col transition-all hover:bg-[rgba(var(--bg-card-rgb),0.8)]">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-8 h-8 rounded-full bg-[rgba(var(--accent-main-rgb),0.1)] border border-[rgba(var(--accent-main-rgb),0.6)] flex items-center justify-center shadow-[0_0_15px_rgba(var(--accent-main-rgb),0.4)]">
-            <Icon className="w-4 h-4 text-[var(--accent-main)]" />
-          </div>
-          <div className="flex items-center">
-            <h3 className="text-lg font-serif font-light text-white tracking-wider drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">{title}</h3>
-            {ref && <TooltipDot text={CONTENT[lang].tooltips.ultra} />}
-          </div>
-        </div>
-        <p className="font-serif text-[11px] text-slate-300 leading-relaxed pl-11">{desc}</p>
-      </div>
-    </div>
-  );
+  const tariffsData = [
+    { icon: Diamond, title: CONTENT[lang].views.nano.title, desc: CONTENT[lang].views.nano.desc },
+    { icon: Rocket, title: CONTENT[lang].views.pro.title, desc: CONTENT[lang].views.pro.desc },
+    { icon: Globe, title: CONTENT[lang].views.lend.title, desc: CONTENT[lang].views.lend.desc },
+    { icon: Crown, title: CONTENT[lang].views.ultra.title, desc: CONTENT[lang].views.ultra.desc, ref: ultraRef, tooltip: CONTENT[lang].tooltips.ultra }
+  ];
 
   return (
     <>
@@ -857,6 +982,9 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
               transition: 'transform 0.1s linear'
             }} 
           />
+
+          {/* Темный градиент поверх фото (Затемнение снизу, заканчивается под фамилией) */}
+          <div className="absolute bottom-0 left-0 w-full h-[65%] bg-gradient-to-t from-[var(--bg-card)] via-[rgba(var(--bg-card-rgb),0.8)] to-transparent pointer-events-none z-10"></div>
         </div>
 
         {/* 3D CONTENT (Текст теперь находится ПОД линзой) */}
@@ -958,7 +1086,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
 
         {/* === СКРОЛЛ-КОНТЕНТ === */}
         <div 
-          className="flex-1 overflow-y-auto custom-scroll px-6 pb-28 relative z-10 flex flex-col gap-10"
+          className="flex-1 overflow-y-auto overflow-x-hidden custom-scroll px-6 pb-28 relative z-10 flex flex-col gap-10"
           onScroll={handleScroll}
           ref={scrollContainerRef}
         >
@@ -1006,15 +1134,12 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
 
           <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.2)] to-transparent relative z-10"></div>
 
-          {/* 2. ТАРИФЫ (ВСЕ СВЕТЯТСЯ КАК ULTRA) */}
-          <div className="flex flex-col gap-4 animate-in slide-in-from-bottom-4 duration-700 fade-in delay-[300ms] relative z-10">
-            {renderTariff(Diamond, CONTENT[lang].views.nano.title, CONTENT[lang].views.nano.desc)}
-            {renderTariff(Rocket, CONTENT[lang].views.pro.title, CONTENT[lang].views.pro.desc)}
-            {renderTariff(Globe, CONTENT[lang].views.lend.title, CONTENT[lang].views.lend.desc)}
-            {renderTariff(Crown, CONTENT[lang].views.ultra.title, CONTENT[lang].views.ultra.desc, ultraRef)}
+          {/* 2. 3D-КАРУСЕЛЬ ТАРИФОВ (COVER FLOW) */}
+          <div className="flex flex-col animate-in slide-in-from-bottom-4 duration-700 fade-in delay-[300ms] relative z-10 py-4">
+            <TariffCarousel tariffs={tariffsData} />
           </div>
 
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.4)] to-transparent relative z-10"></div>
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.4)] to-transparent relative z-10 mt-4"></div>
 
           {/* 3. ТЕХНОЛОГИИ */}
           <div className="flex flex-col animate-in slide-in-from-bottom-4 duration-700 fade-in delay-[400ms] relative z-10">
@@ -1418,8 +1543,17 @@ const App = () => {
   const handleClose = (e) => {
     if (e) e.stopPropagation();
     playASMRSound('close');
+    
+    // Блокируем гироскоп и мышь на время анимации закрытия
+    isFlippingRef.current = true;
+    setRotate({ x: 0, y: 0 });
+    setGlare(prev => ({ ...prev, opacity: 0 }));
+    
     setIsOpen(false);
     if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(20); 
+    
+    // Снимаем блокировку, когда карточка полностью закрылась
+    setTimeout(() => { isFlippingRef.current = false; }, 1000);
   };
 
   const handleCopy = () => {
@@ -1516,16 +1650,12 @@ const App = () => {
     <div className={`fixed inset-0 w-full h-full bg-[var(--bg-main)] flex flex-col font-sans select-none transition-all duration-500 overflow-hidden justify-center items-center p-4 sm:p-8 ${isGlitching ? 'glitch-active' : ''}`}>
       <style>{globalStyles}</style>
 
-      {/* Фоновое свечение приложения */}
-      <div className="absolute top-0 left-0 w-[150%] aspect-square rounded-full bg-[radial-gradient(ellipse_at_center,rgba(var(--accent-light-rgb),0.08)_0%,transparent_50%)] blur-[60px] mix-blend-screen pointer-events-none" style={{ animation: 'liquid-chrome 20s ease-in-out infinite alternate', transform: `scale(var(--audio-scale, 1)) translateZ(0)`, willChange: 'transform' }}></div>
-      <div 
-        className="fixed top-1/4 left-1/4 w-96 h-96 bg-[rgba(var(--accent-main-rgb),0.1)] rounded-full blur-[120px] pointer-events-none ease-out mix-blend-screen"
-        style={{ transform: `translate(var(--bg-x, 0px), var(--bg-y, 0px)) scale(var(--audio-scale, 1)) translateZ(0)`, willChange: 'transform' }}
-      ></div>
-      <div 
-        className="fixed bottom-1/4 right-1/4 w-96 h-96 bg-[rgba(var(--accent-light-rgb),0.1)] rounded-full blur-[120px] pointer-events-none ease-out mix-blend-screen"
-        style={{ transform: `translate(calc(var(--bg-x, 0px) * 1.5), calc(var(--bg-y, 0px) * 1.5)) scale(var(--audio-scale, 1)) translateZ(0)`, willChange: 'transform' }}
-      ></div>
+      {/* ПРЕМИАЛЬНЫЙ ЧИСТЫЙ ФОН С ПАРЯЩИМИ ЧАСТИЦАМИ */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(i => (
+          <div key={i} className={`floating-particle particle-${i}`}></div>
+        ))}
+      </div>
 
       {/* КОНТЕЙНЕР ВИЗИТКИ */}
       <div 
@@ -1548,6 +1678,12 @@ const App = () => {
               transformStyle: 'preserve-3d'
             }}
           >
+            {/* СВЕЧЕНИЕ ВОКРУГ ВИЗИТКИ (Находится позади за счет translateZ) */}
+            <div
+              className={`absolute inset-0 rounded-[2.5rem] bg-[var(--accent-main)] blur-[40px] transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] pointer-events-none ${isOpen ? 'opacity-10 scale-[1.02]' : 'opacity-[0.35] scale-[0.98]'}`}
+              style={{ transform: 'translateZ(-20px)' }}
+            ></div>
+
             <CreatorCard lang={lang} isOpen={isOpen} onClose={handleClose} onEasterEgg={triggerEasterEgg} rotate={rotate} glare={glare} />
           </div>
         </div>
