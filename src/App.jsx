@@ -18,15 +18,15 @@ const hexToRgb = (hex) => {
 // ==========================================
 const COLORS = {
   // ⬛ ТЕМНЫЕ ФОНОВЫЕ ЦВЕТА
-  bgMain: '#ececd4',        // Основной фон страницы (снаружи визитки)
-  bgCard: '#22282b',        // Фон лицевой визитки
-  bgModal: '#0e1113',       // Самые глубокие тени
-  bgGradMid: '#1a1f22',     // Средний графитовый цвет для всего лендинга
-  bgGradDark: '#1a1f22',    // Низ лендинга
+  bgMain: '#120A0E',        // Основной фон страницы (глубокий теплый черный)
+  bgCard: '#351E28',        // Фон лицевой визитки (роскошный винный/сливовый)
+  bgModal: '#0A0508',       // Самые глубокие тени
+  bgGradMid: '#24141B',     // Средний цвет для лендинга (чистый переход)
+  bgGradDark: '#170D12',    // Низ лендинга
   
   // 🌟 АКЦЕНТНЫЕ ЦВЕТА (Кнопки, текст, иконки, свечения)
-  accentMain: '#2dd4d4',    // Главный бирюзовый неон
-  accentLight: '#ffffff'    // Чистый белый для текста на кнопках
+  accentMain: '#D4AF37',    // Главное золото (дорогое, благородное)
+  accentLight: '#F9E596'    // Светлое шампанское для бликов без грязи
 };
 
 // ==========================================
@@ -863,9 +863,9 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
         <div 
           className="absolute inset-0 z-20 flex flex-col h-full justify-between p-6 pointer-events-none" 
           style={{ 
-            transform: isOpen ? 'translateZ(0px)' : `translateZ(20px) translate(${-rotate.y * 0.1}px, ${rotate.x * 0.1}px)`, 
-            transition: glare.opacity > 0 && !isOpen ? 'transform 0.1s linear' : 'transform 0.5s ease-out',
-            transformStyle: 'preserve-3d' 
+            /* Идеальный 2D parallax: текст движется, создавая глубину, но не протыкает стекло по оси Z */
+            transform: isOpen ? 'translate(0px, 0px)' : `translate(${-rotate.y * 0.5}px, ${rotate.x * 0.5}px)`, 
+            transition: glare.opacity > 0 && !isOpen ? 'transform 0.1s linear' : 'transform 0.5s ease-out'
           }}
         >
           <div className="flex justify-between items-start pointer-events-auto">
@@ -899,7 +899,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
           <div 
             className="absolute inset-0 w-full h-full pointer-events-none rounded-[2.5rem] clip-corners z-30"
             style={{
-              transform: 'translateZ(25px)',
+              /* УБРАЛИ transform: translateZ, чтобы линза монолитно сидела на фоне и углы не торчали! */
               background: `
                 radial-gradient(farthest-corner circle at ${glare.x}% ${glare.y}%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 60%),
                 linear-gradient(${135 + rotate.x + rotate.y}deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 70%)
