@@ -94,6 +94,10 @@ const CONTENT = {
         title: 'Архитектура Pro',
         desc: 'Premium-шаблон из моей базы с полной адаптацией под вас. Мини-апп в TG/VK + веб-версия (PWA). Поддомен в подарок и запуск «под ключ» всего за 3-5 дней.'
       },
+      lend: {
+        title: 'PWA Lend',
+        desc: 'Мощный гибрид визитки и премиального лендинга. Идеально для экспертов: собирает лиды, презентует продукты и работает как полноценное приложение.'
+      },
       ultra: {
         title: 'Эксклюзив Ultra',
         desc: 'Уникальный цифровой код вашего бизнеса. Разработка индивидуальной структуры, сложнейшие 3D-сцены, эффекты стекла и частиц. Решение для тех, кто не терпит компромиссов.'
@@ -224,6 +228,10 @@ const CONTENT = {
       pro: {
         title: 'Architecture Pro',
         desc: 'A premium template from my base fully adapted for you. TG/VK mini-app + web version (PWA). A free subdomain and a turnkey launch in just 3-5 days.'
+      },
+      lend: {
+        title: 'PWA Lend',
+        desc: 'A powerful hybrid of a business card and a premium landing page. Perfect for experts: collects leads, presents products, and works as a full app.'
       },
       ultra: {
         title: 'Exclusive Ultra',
@@ -423,26 +431,6 @@ const globalStyles = `
   .animate-scroll {
     animation: scroll-left 15s linear infinite;
   }
-  @keyframes spark-explode {
-    0% { transform: translate(0, 0) scale(0.5); opacity: 0.8; }
-    100% { transform: translate(var(--tx), var(--ty)) scale(1); opacity: 0.6; }
-  }
-  @keyframes spark-wander {
-    0% { transform: translate(var(--tx), var(--ty)) scale(1); opacity: 0.6; }
-    33% { transform: translate(calc(var(--tx) * 1.5 + var(--wx1)), calc(var(--ty) * 1.5 + var(--wy1))) scale(1.5); opacity: 0.8; }
-    66% { transform: translate(calc(var(--tx) * 2.5 + var(--wx2)), calc(var(--ty) * 2.5 + var(--wy2))) scale(1.2); opacity: 0.5; }
-    100% { transform: translate(calc(var(--tx) * 4 + var(--wx3)), calc(var(--ty) * 4 + var(--wy3))) scale(0.8); opacity: 0; }
-  }
-  .spark-particle {
-    position: absolute;
-    border-radius: 50%;
-    background-color: rgba(var(--accent-main-rgb), 0.9);
-    box-shadow: 0 0 6px rgba(var(--accent-main-rgb), 0.8), 0 0 12px rgba(var(--accent-main-rgb), 0.4);
-    pointer-events: none;
-    animation: 
-      spark-explode 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards,
-      spark-wander var(--wt) linear 0.8s forwards;
-  }
   
   /* === АНИМАЦИИ ДЛЯ ЭФФЕКТА СГОРАЮЩЕЙ БУМАГИ === */
   @keyframes burn-mask-reveal {
@@ -514,23 +502,6 @@ const globalStyles = `
     background-color: var(--accent-main);
     border-radius: 2px;
     animation: equalize 1s infinite ease-in-out;
-  }
-
-  /* === ИНТЕРАКТИВНЫЙ ШЛЕЙФ === */
-  @keyframes trail-fade {
-    0% { opacity: 0.8; transform: scale(1) translate(-50%, -50%); }
-    100% { opacity: 0; transform: scale(0.1) translate(-50%, -50%); }
-  }
-  .trail-particle {
-    position: fixed;
-    pointer-events: none;
-    background: rgba(var(--accent-light-rgb), 0.6);
-    box-shadow: 0 0 10px rgba(var(--accent-light-rgb), 0.4), 0 0 20px rgba(var(--accent-light-rgb), 0.2);
-    border-radius: 50%;
-    width: 8px;
-    height: 8px;
-    animation: trail-fade 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-    z-index: 9999;
   }
 `;
 
@@ -628,24 +599,12 @@ const ScratchCard = ({ children, text }) => {
 };
 
 // ==========================================
-// МАГНИТНАЯ КНОПКА (ВАУ ЭФФЕКТ)
+// ОБЕРТКА КНОПКИ
 // ==========================================
 const MagneticWrapper = ({ children, className, onClick }) => {
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-  const handleMouseMove = (e) => {
-    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - (left + width / 2)) * 0.3; // Сила притяжения
-    const y = (e.clientY - (top + height / 2)) * 0.3;
-    setPos({ x, y });
-  };
+  // Отключили залипание за пальцем для идеальной работы на мобильном
   return (
-    <div 
-      className={className} 
-      onMouseMove={handleMouseMove} 
-      onMouseLeave={() => setPos({x: 0, y: 0})} 
-      onClick={onClick}
-      style={{ transform: `translate(${pos.x}px, ${pos.y}px)`, transition: 'transform 0.15s ease-out' }}
-    >
+    <div className={className} onClick={onClick}>
        {children}
     </div>
   );
@@ -706,11 +665,9 @@ const TypewriterHeader = ({ text, className }) => {
 };
 
 // ==========================================
-// 🪄 КОМПОНЕНТ ЭФФЕКТА СГОРАНИЯ
+// 🪄 КОМПОНЕНТ ЭФФЕКТА СГОРАНИЯ С LIQUID GLASS
 // ==========================================
-const HACKER_CHARS = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
-
-const BurnRevealImage = ({ src, className, style, imgClassName = "", burnColor = "chrome", startBurn = true }) => {
+const BurnRevealImage = ({ src, className, style, imgClassName = "", burnColor = "chrome", startBurn = true, rotate = {x:0, y:0} }) => {
   const themes = {
     default: { c1: 'rgba(220, 38, 38, 0.9)', c2: 'rgba(250, 150, 0, 1)', c3: 'rgba(255, 220, 50, 0.8)' },
     wine: { c1: 'rgba(88, 11, 37, 0.9)', c2: 'rgba(159, 18, 57, 1)', c3: 'rgba(225, 29, 72, 0.8)' },
@@ -718,12 +675,37 @@ const BurnRevealImage = ({ src, className, style, imgClassName = "", burnColor =
   };
   const t = themes[burnColor] || themes.chrome;
 
+  // Рассчитываем силу искажения жидкого стекла (Liquid Glass) на основе гироскопа/мыши
+  const liquidDistortion = 2 + (Math.abs(rotate.x) + Math.abs(rotate.y)) * 0.3;
+
   return (
     <div className={`absolute inset-0 pointer-events-none rounded-[2.5rem] ${className}`} style={{ ...style, clipPath: 'inset(0 round 2.5rem)', WebkitClipPath: 'inset(0 round 2.5rem)' }}>
-      <div 
-        className={`absolute inset-0 bg-cover bg-center rounded-[2.5rem] ${imgClassName} ${startBurn ? 'smooth-mask-wipe' : 'opacity-0'}`}
-        style={{ backgroundImage: `url(${src})` }}
-      />
+      
+      {/* SVG фильтр для эффекта жидкого стекла */}
+      <svg style={{ position: 'absolute', width: 0, height: 0, pointerEvents: 'none' }} aria-hidden="true">
+        <filter id={`liquid-glass-${burnColor}`}>
+          <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="2" result="noise" seed="1" />
+          <feDisplacementMap 
+            in="SourceGraphic" 
+            in2="noise" 
+            scale={liquidDistortion} 
+            xChannelSelector="R" 
+            yChannelSelector="G" 
+          />
+        </filter>
+      </svg>
+
+      <div className={`absolute inset-0 rounded-[2.5rem] ${startBurn ? 'smooth-mask-wipe' : 'opacity-0'}`}>
+        <div 
+          className={`absolute inset-0 bg-cover bg-center rounded-[2.5rem] ${imgClassName}`}
+          style={{ 
+            backgroundImage: `url(${src})`,
+            filter: `url(#liquid-glass-${burnColor})`,
+            transform: 'scale(1.05)' // Чтобы не было видно искаженных краев
+          }}
+        />
+      </div>
+
       {startBurn && (
         <div 
           className="absolute inset-0 burn-fire-edge rounded-[2.5rem]" 
@@ -738,21 +720,26 @@ const BurnRevealImage = ({ src, className, style, imgClassName = "", burnColor =
 // СТОРИТЕЛЛИНГ БЛОКИ (НОВЫЕ КОМПОНЕНТЫ)
 // ==========================================
 
-const AnimatedCounter = ({ end, suffix, label }) => {
+const AnimatedCounter = ({ end, suffix, label, isOpen }) => {
   const [count, setCount] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setIsVisible(true); observer.disconnect(); }
+      if (entry.isIntersecting) { setIsVisible(true); }
     }, { threshold: 0.1 });
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
+    if (!isOpen) {
+      setCount(0); // Сбрасываем счетчик при закрытии
+      return;
+    }
     if (!isVisible) return;
+    
     let start = 0;
     const duration = 2000;
     const stepTime = 20;
@@ -769,7 +756,7 @@ const AnimatedCounter = ({ end, suffix, label }) => {
       }
     }, stepTime);
     return () => clearInterval(timer);
-  }, [isVisible, end]);
+  }, [isVisible, isOpen, end]);
 
   return (
     <div ref={ref} className="glass-card flex flex-col items-center justify-center p-5 rounded-2xl relative overflow-hidden">
@@ -921,7 +908,7 @@ const FAQAccordion = ({ items }) => {
 // ==========================================
 // ОСНОВНАЯ КАРТОЧКА С ЛЕНДИНГОМ
 // ==========================================
-const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
+const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate }) => {
   const [isUltraVisible, setIsUltraVisible] = useState(false);
   const [crownClicks, setCrownClicks] = useState(0);
   
@@ -965,15 +952,15 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
   return (
     <>
       {/* ========================================================================= */}
-      {/* 1. ЗАКРЫТОЕ СОСТОЯНИЕ (ЛИЦЕВАЯ СТОРОНА) - LIQUID CHROME */}
+      {/* 1. ЗАКРЫТОЕ СОСТОЯНИЕ (ЛИЦЕВАЯ СТОРОНА) - LIQUID CHROME + ОБЪЕМНОЕ СТЕКЛО */}
       {/* ========================================================================= */}
-      <div className={`absolute inset-0 w-full h-full card-backface-hidden rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.5)] overflow-hidden bg-[var(--bg-card)] text-white flex flex-col p-6 group-hover:shadow-[0_40px_80px_rgba(0,0,0,0.6)] transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'opacity-0 pointer-events-none scale-110' : 'opacity-100 scale-100'}`}>
+      <div className={`absolute inset-0 w-full h-full card-backface-hidden rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5),inset_0_4px_15px_rgba(255,255,255,0.1),inset_0_-4px_20px_rgba(0,0,0,0.6),inset_2px_0_10px_rgba(255,255,255,0.05),inset_-2px_0_10px_rgba(0,0,0,0.4)] border-t-[1.5px] border-l-[1.5px] border-[rgba(255,255,255,0.15)] border-b-[1.5px] border-r-[1.5px] border-b-[rgba(0,0,0,0.4)] border-r-[rgba(0,0,0,0.4)] overflow-hidden bg-[var(--bg-card)] text-white flex flex-col p-6 group-hover:shadow-[0_30px_60px_rgba(0,0,0,0.6),inset_0_4px_15px_rgba(255,255,255,0.15),inset_0_-4px_20px_rgba(0,0,0,0.6)] transition-[transform,opacity] duration-500 ease-out ${isOpen ? 'opacity-0 pointer-events-none scale-110' : 'opacity-100 scale-100'}`}>
         
         <div className="absolute inset-0 bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-grad-mid)]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[rgba(var(--accent-main-rgb),0.15)] via-transparent to-transparent mix-blend-screen"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-grad-dark)] from-0% via-[rgba(var(--bg-grad-dark-rgb),0.8)] via-[15%] to-transparent to-[30%] pointer-events-none z-0 rounded-[2.5rem]"></div>
 
-        <BurnRevealImage src={CONTENT[lang].creator.bgImage} className="grayscale-[0.3]" burnColor="chrome" startBurn={true} />
+        <BurnRevealImage src={CONTENT[lang].creator.bgImage} className="grayscale-[0.3]" burnColor="chrome" startBurn={true} rotate={rotate} />
 
         <div className="relative z-10 flex flex-col h-full justify-between">
           <div className="flex justify-between items-start">
@@ -1006,7 +993,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
       {/* ========================================================================= */}
       {/* 2. ОТКРЫТОЕ СОСТОЯНИЕ (СКРОЛЛ-ЛЕНДИНГ) - LIQUID CHROME */}
       {/* ========================================================================= */}
-      <div className={`absolute inset-0 w-full h-full rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col text-white transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] ${isUltraVisible ? 'bg-[var(--bg-modal)] border-[rgba(var(--accent-main-rgb),0.4)]' : 'bg-[var(--bg-grad-mid)] border-[rgba(var(--accent-main-rgb),0.2)]'} border ${isOpen ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto' : 'opacity-0 translate-y-10 scale-95 pointer-events-none'}`}>
+      <div className={`absolute inset-0 w-full h-full rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col text-white transition-[transform,opacity] duration-500 ease-out ${isUltraVisible ? 'bg-[var(--bg-modal)] border-[rgba(var(--accent-main-rgb),0.4)]' : 'bg-[var(--bg-grad-mid)] border-[rgba(var(--accent-main-rgb),0.2)]'} border ${isOpen ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto' : 'opacity-0 translate-y-10 scale-95 pointer-events-none'}`}>
         
         {/* ПРОГРЕСС БАР СВЕРХУ */}
         <div className="absolute top-0 left-0 h-1 bg-gradient-to-r from-[var(--accent-light)] via-[var(--accent-main)] to-[var(--accent-main)] z-50 transition-all duration-300" style={{ width: 'var(--scroll-progress, 0%)' }}></div>
@@ -1065,7 +1052,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
           {/* БЛОК: СТАТИСТИКА (Счетчики) */}
           <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-bottom-4 duration-700 fade-in delay-200 relative z-10">
             {CONTENT[lang].storytelling.stats.map((stat, idx) => (
-              <AnimatedCounter key={idx} end={stat.num} suffix={stat.suffix} label={stat.label} />
+              <AnimatedCounter key={idx} end={stat.num} suffix={stat.suffix} label={stat.label} isOpen={isOpen} />
             ))}
           </div>
 
@@ -1109,6 +1096,17 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
                 <h3 className="text-lg font-serif font-light text-white tracking-wider">{CONTENT[lang].views.pro.title}</h3>
               </div>
               <p className="font-serif text-[11px] text-slate-300 leading-relaxed pl-11">{CONTENT[lang].views.pro.desc}</p>
+            </div>
+
+            {/* Lend */}
+            <div className="glass-card p-5 rounded-2xl flex flex-col transition-all hover:bg-[rgba(var(--bg-card-rgb),0.8)]">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 rounded-full bg-[var(--bg-main)] border border-[rgba(var(--accent-light-rgb),0.3)] flex items-center justify-center shadow-inner">
+                  <Globe className="w-4 h-4 text-[var(--accent-light)]" />
+                </div>
+                <h3 className="text-lg font-serif font-light text-white tracking-wider">{CONTENT[lang].views.lend.title}</h3>
+              </div>
+              <p className="font-serif text-[11px] text-slate-300 leading-relaxed pl-11">{CONTENT[lang].views.lend.desc}</p>
             </div>
             
             {/* Ultra (Триггер смены цвета) */}
@@ -1159,8 +1157,8 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg }) => {
                   {CONTENT[lang].leadMagnet.description}
                 </p>
                 <MagneticWrapper onClick={handlePromoClick} className="w-full max-w-[280px] cursor-pointer">
-                  <div className="bg-gradient-to-r from-[var(--accent-light)] to-[var(--accent-main)] hover:from-[var(--accent-main)] hover:to-[var(--accent-light)] text-[var(--bg-main)] text-[11px] font-bold uppercase tracking-widest py-4 rounded-xl flex items-center justify-center transition-all shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.2)] border border-[rgba(var(--accent-main-rgb),0.5)] group active:scale-95">
-                    <Crown className="w-4 h-4 mr-2 text-[var(--bg-main)] group-hover:scale-110 transition-transform" />
+                  <div className="bg-gradient-to-r from-[var(--accent-light)] to-[var(--accent-main)] hover:from-[var(--accent-main)] hover:to-[var(--accent-light)] text-slate-900 text-[11px] font-bold uppercase tracking-widest py-4 rounded-xl flex items-center justify-center transition-all shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.2)] border border-[rgba(var(--accent-main-rgb),0.5)] group active:scale-95">
+                    <Crown className="w-4 h-4 mr-2 text-slate-900 group-hover:scale-110 transition-transform" />
                     {CONTENT[lang].leadMagnet.buttonText}
                   </div>
                 </MagneticWrapper>
@@ -1239,7 +1237,6 @@ const App = () => {
   const [showPwaPrompt, setShowPwaPrompt] = useState(false); // Состояние для iOS плашки PWA
   const [copied, setCopied] = useState(false);       // Состояние для копирования ссылки
   const [isAudioPlaying, setIsAudioPlaying] = useState(false); // Состояние аудио
-  const [trail, setTrail] = useState([]); // Состояние для искристого шлейфа
   
   // Easter Egg States
   const [isGlitching, setIsGlitching] = useState(false);
@@ -1353,6 +1350,32 @@ const App = () => {
       window.removeEventListener('touchmove', handleGlobalMove);
     };
   }, []);
+
+  // Слушатель гироскопа устройства для создания эффекта жидкого стекла и наклона
+  useEffect(() => {
+    const handleOrientation = (e) => {
+      if (isOpen || isFlippingRef.current || !cardRef.current) return;
+      if (!e.gamma && !e.beta) return;
+      
+      // gamma - это наклон влево/вправо (от -90 до 90)
+      // beta - это наклон вперед/назад (от -180 до 180). Обычно человек держит телефон под углом ~40 градусов.
+      const rotateY = Math.max(-25, Math.min(25, e.gamma * 0.6));
+      const rotateX = Math.max(-25, Math.min(25, (e.beta - 40) * 0.6));
+      
+      setRotate({ x: rotateX, y: rotateY });
+      setGlare({ x: 50 + rotateY * 2, y: 50 + rotateX * 2, opacity: 1 });
+    };
+
+    if (typeof window !== 'undefined' && window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', handleOrientation);
+    }
+
+    return () => {
+      if (typeof window !== 'undefined' && window.DeviceOrientationEvent) {
+        window.removeEventListener('deviceorientation', handleOrientation);
+      }
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -1566,11 +1589,6 @@ const App = () => {
     <div className={`fixed inset-0 w-full h-full bg-[var(--bg-main)] flex flex-col font-sans select-none transition-all duration-500 overflow-hidden justify-center items-center p-4 sm:p-8 ${isGlitching ? 'glitch-active' : ''}`}>
       <style>{globalStyles}</style>
 
-      {/* Интерактивный шлейф */}
-      {trail.map(p => (
-        <div key={p.id} className="trail-particle" style={{ left: p.x, top: p.y }} />
-      ))}
-
       {/* Фоновое свечение приложения */}
       <div className="absolute top-0 left-0 w-[150%] aspect-square rounded-full bg-[radial-gradient(ellipse_at_center,rgba(var(--accent-light-rgb),0.08)_0%,transparent_50%)] blur-[60px] mix-blend-screen pointer-events-none" style={{ animation: 'liquid-chrome 20s ease-in-out infinite alternate', transform: `scale(var(--audio-scale, 1)) translateZ(0)`, willChange: 'transform' }}></div>
       <div 
@@ -1586,7 +1604,7 @@ const App = () => {
       <div className="w-full h-full flex justify-center relative z-40 items-center">
         <div 
           ref={cardRef}
-          className={`relative z-10 transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'w-full h-full sm:max-w-[480px] sm:h-[90vh] sm:rounded-[2.5rem]' : 'w-full aspect-[1/1.6] sm:aspect-[1/1.5] cursor-pointer group animate-float touch-none'}`}
+          className={`relative z-10 transition-[max-width,height,transform,border-radius] duration-500 ease-out ${isOpen ? 'w-full h-full sm:max-w-[480px] sm:h-[90vh] sm:rounded-[2.5rem]' : 'w-full aspect-[1/1.6] sm:aspect-[1/1.5] cursor-pointer group animate-float touch-none'}`}
           style={{ 
             perspective: '1500px', 
             maxWidth: isOpen ? '100%' : 'min(22rem, 85vw, 55vh)',
@@ -1610,7 +1628,7 @@ const App = () => {
                 />
               )}
 
-              <CreatorCard lang={lang} isOpen={isOpen} onClose={handleClose} onEasterEgg={triggerEasterEgg} />
+              <CreatorCard lang={lang} isOpen={isOpen} onClose={handleClose} onEasterEgg={triggerEasterEgg} rotate={rotate} />
 
               {/* Блик виден только на закрытой карточке */}
               {!isOpen && (
@@ -1730,16 +1748,6 @@ const App = () => {
                 setShowShare(false);
                 setShowPwaPrompt(true);
               }}
-              className={`w-12 h-12 rounded-full bg-[var(--bg-grad-mid)] hover:bg-[var(--bg-modal)] flex items-center justify-center mb-4 border transition-colors group cursor-pointer active:scale-95 border-[rgba(var(--accent-main-rgb),0.4)]`}
-            >
-              <X className="w-5 h-5" />
-            </button>
-            
-            <button 
-              onClick={() => {
-                setShowShare(false);
-                setShowPwaPrompt(true);
-              }}
               className={`w-12 h-12 rounded-full bg-[var(--bg-main)] hover:bg-[var(--bg-modal)] flex items-center justify-center mb-4 border transition-colors group cursor-pointer active:scale-95 border-[rgba(var(--accent-main-rgb),0.4)]`}
             >
               <QrCode className={`w-6 h-6 group-hover:scale-110 transition-transform text-[var(--accent-main)]`} />
@@ -1809,7 +1817,7 @@ const App = () => {
 
             <a 
               href={CONTENT[lang].easterEgg.link}
-              className="w-full bg-gradient-to-r from-[var(--accent-light)] to-[var(--accent-main)] hover:from-[var(--accent-main)] hover:to-[var(--accent-light)] text-[var(--bg-main)] text-[11px] font-bold uppercase tracking-widest py-4 rounded-xl flex items-center justify-center transition-all shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.3)] border border-[rgba(var(--accent-main-rgb),0.5)] active:scale-95"
+              className="w-full bg-gradient-to-r from-[var(--accent-light)] to-[var(--accent-main)] hover:from-[var(--accent-main)] hover:to-[var(--accent-light)] text-slate-900 text-[11px] font-bold uppercase tracking-widest py-4 rounded-xl flex items-center justify-center transition-all shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.3)] border border-[rgba(var(--accent-main-rgb),0.5)] active:scale-95"
             >
               {CONTENT[lang].easterEgg.btn}
             </a>
@@ -1869,7 +1877,7 @@ const App = () => {
 
             <button 
               onClick={() => setShowPwaPrompt(false)}
-              className="w-full bg-gradient-to-r from-[var(--accent-main)] to-[var(--accent-light)] text-[var(--bg-main)] font-bold py-4 px-4 rounded-2xl transition-colors shadow-[0_0_20px_rgba(var(--accent-light-rgb),0.2)] border border-[rgba(var(--accent-light-rgb),0.5)] active:scale-95"
+              className="w-full bg-gradient-to-r from-[var(--accent-main)] to-[var(--accent-light)] text-slate-900 font-bold py-4 px-4 rounded-2xl transition-colors shadow-[0_0_20px_rgba(var(--accent-light-rgb),0.2)] border border-[rgba(var(--accent-light-rgb),0.5)] active:scale-95"
             >
               {CONTENT[lang].ui.done}
             </button>
