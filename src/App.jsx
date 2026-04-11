@@ -879,7 +879,7 @@ const TariffCarousel = ({ tariffs }) => {
                     </div>
                     <div className="flex items-center w-full min-w-0">
                       <h3 
-                        className="text-xl font-serif font-bold tracking-wider transition-all duration-500 truncate"
+                        className="text-base sm:text-xl leading-tight font-serif font-bold tracking-wider transition-all duration-500 break-words line-clamp-2"
                         style={{
                           color: isActive ? 'var(--accent-main)' : 'white',
                           textShadow: isActive ? '0 0 15px rgba(var(--accent-main-rgb),0.6)' : '0 0 5px rgba(255,255,255,0.3)'
@@ -969,9 +969,8 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
       >
         {/* BACKGROUND & IMAGE (Clipped to prevent corners from sticking out) */}
         <div className="absolute inset-0 w-full h-full rounded-[2.5rem] overflow-hidden clip-corners shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-[var(--bg-card)] border-t-[1.5px] border-l-[1.5px] border-[rgba(255,255,255,0.15)] border-b-[1.5px] border-r-[1.5px] border-b-[rgba(0,0,0,0.4)] border-r-[rgba(0,0,0,0.4)]">
-          <div className="absolute inset-0 bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-grad-mid)]"></div>
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[rgba(var(--accent-main-rgb),0.15)] via-transparent to-transparent mix-blend-screen"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-grad-dark)] from-0% via-[rgba(var(--bg-grad-dark-rgb),0.8)] via-[15%] to-transparent to-[30%] pointer-events-none z-0"></div>
+          {/* Убрали белый свет от background. Оставляем только базовый цвет под фото */}
+          <div className="absolute inset-0 bg-[var(--bg-card)]"></div>
 
           {/* PARALLAX IMAGE BACKGROUND (Отвечает за глубину картинки) */}
           <div 
@@ -983,8 +982,8 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
             }} 
           />
 
-          {/* Темный градиент поверх фото (Затемнение снизу, заканчивается под фамилией) */}
-          <div className="absolute bottom-0 left-0 w-full h-[65%] bg-gradient-to-t from-[var(--bg-card)] via-[rgba(var(--bg-card-rgb),0.8)] to-transparent pointer-events-none z-10"></div>
+          {/* Темный градиент поверх фото (Чистое затемнение от низа до фамилии) */}
+          <div className="absolute bottom-0 left-0 w-full h-[70%] bg-gradient-to-t from-[var(--bg-modal)] via-[rgba(var(--bg-modal-rgb),0.8)] to-transparent pointer-events-none z-10"></div>
         </div>
 
         {/* 3D CONTENT (Текст теперь находится ПОД линзой) */}
@@ -1029,12 +1028,12 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
             style={{
               /* УБРАЛИ transform: translateZ, чтобы линза монолитно сидела на фоне и углы не торчали! */
               background: `
-                radial-gradient(farthest-corner circle at ${glare.x}% ${glare.y}%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 60%),
-                linear-gradient(${135 + rotate.x + rotate.y}deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 70%)
+                radial-gradient(farthest-corner circle at ${glare.x}% ${glare.y}%, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 50%),
+                linear-gradient(${135 + rotate.x + rotate.y}deg, rgba(255,255,255,0) 40%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 60%)
               `,
               boxShadow: `
-                inset ${rotate.y * 1.5}px ${-rotate.x * 1.5}px 30px rgba(255, 255, 255, 0.15),
-                inset ${-rotate.y * 1.5}px ${rotate.x * 1.5}px 40px rgba(var(--accent-main-rgb), 0.2),
+                inset ${rotate.y * 1.5}px ${-rotate.x * 1.5}px 30px rgba(255, 255, 255, 0.1),
+                inset ${-rotate.y * 1.5}px ${rotate.x * 1.5}px 40px rgba(var(--accent-main-rgb), 0.15),
                 inset 0 0 20px rgba(0,0,0,0.5)
               `,
               opacity: Math.max(0.5, glare.opacity), 
@@ -1047,7 +1046,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
       {/* ========================================================================= */}
       {/* 2. ОТКРЫТОЕ СОСТОЯНИЕ (СКРОЛЛ-ЛЕНДИНГ) */}
       {/* ========================================================================= */}
-      <div className={`absolute inset-0 w-full h-full rounded-[2.5rem] clip-corners shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-[var(--bg-grad-mid)] border-[rgba(var(--accent-main-rgb),0.4)] border flex flex-col text-white transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto' : 'opacity-0 translate-y-10 scale-95 pointer-events-none'}`}>
+      <div className={`absolute inset-0 w-full h-full rounded-[2.5rem] clip-corners overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-[var(--bg-grad-mid)] border-[rgba(var(--accent-main-rgb),0.4)] border flex flex-col text-white transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto' : 'opacity-0 translate-y-10 scale-95 pointer-events-none'}`}>
         
         {/* === ФОНОВАЯ НАДПИСЬ PREMIUM (ФИКСИРОВАННАЯ И ОБЪЕМНАЯ) === */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[25vw] font-black pointer-events-none z-0 select-none tracking-tighter opacity-80" 
@@ -1069,7 +1068,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
         <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] aspect-square rounded-full blur-[60px] pointer-events-none transition-colors duration-1000 bg-[rgba(var(--accent-main-rgb),0.1)]`}></div>
 
         {/* === ПЛАВАЮЩАЯ ШАПКА === */}
-        <div className={`shrink-0 pt-8 pb-4 px-6 flex justify-between items-center relative z-20 transition-colors duration-1000 bg-gradient-to-b from-[var(--bg-grad-dark)] to-transparent`}>
+        <div className={`shrink-0 pt-8 pb-4 px-6 flex justify-between items-center relative z-20 transition-colors duration-1000 bg-[var(--bg-grad-mid)]`}>
           <div className="flex items-center gap-3">
             <div className="glass-card px-3 py-1.5 rounded-full flex items-center gap-2">
               <Crown className={`w-3.5 h-3.5 transition-colors duration-1000 text-[var(--accent-main)] drop-shadow-[0_0_5px_rgba(var(--accent-main-rgb),0.8)]`} />
@@ -1354,34 +1353,6 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission !== 'function') {
-      setSensorsEnabled(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    const handleOrientation = (e) => {
-      if (isOpen || isFlippingRef.current || !cardRef.current) return;
-      if (e.gamma === null || e.beta === null) return;
-      
-      const rotateY = Math.max(-25, Math.min(25, e.gamma * 0.6));
-      const rotateX = Math.max(-25, Math.min(25, (e.beta - 40) * 0.6));
-      
-      setRotate({ x: rotateX, y: rotateY });
-      setGlare({ x: 50 + rotateY * 2, y: 50 + rotateX * 2, opacity: 1 });
-    };
-
-    if (sensorsEnabled && typeof window !== 'undefined' && window.DeviceOrientationEvent) {
-      window.addEventListener('deviceorientation', handleOrientation);
-    }
-    return () => {
-      if (typeof window !== 'undefined' && window.DeviceOrientationEvent) {
-        window.removeEventListener('deviceorientation', handleOrientation);
-      }
-    };
-  }, [isOpen, sensorsEnabled]);
-
-  useEffect(() => {
     let lastUpdate = 0;
     const handleShake = (e) => {
       if (!e.accelerationIncludingGravity) return;
@@ -1515,18 +1486,14 @@ const App = () => {
   const handleOpen = async () => {
     if (isOpen || isGlitching) return;
     
-    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+    // Запрашиваем только акселерометр для тряски (DeviceMotionEvent)
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
       try {
-        const perm = await DeviceOrientationEvent.requestPermission();
+        const perm = await DeviceMotionEvent.requestPermission();
         if (perm === 'granted') setSensorsEnabled(true);
       } catch (e) { }
     } else {
       setSensorsEnabled(true);
-    }
-    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-      try {
-        await DeviceMotionEvent.requestPermission();
-      } catch (e) { }
     }
 
     playASMRSound('open');
