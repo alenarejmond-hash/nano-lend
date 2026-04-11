@@ -744,9 +744,9 @@ const ProcessTimeline = ({ steps }) => {
 const TechStack = ({ items, pwaTooltipText }) => {
   const [activeIndex, setActiveIndex] = useState(null);
   const ICONS = { react: Code2, tailwind: Diamond, lucide: Star, lock: Crown };
-  
+
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="flex flex-col gap-3 w-full">
       {items.map((item, idx) => {
         const Icon = ICONS[item.icon] || Code2;
         const isActive = activeIndex === idx;
@@ -755,18 +755,32 @@ const TechStack = ({ items, pwaTooltipText }) => {
         return (
           <div 
             key={idx} 
-            onMouseEnter={() => setActiveIndex(idx)}
-            onMouseLeave={() => setActiveIndex(null)}
             onClick={() => setActiveIndex(isActive ? null : idx)}
-            className={`glass-card p-4 rounded-2xl transition-all duration-500 cursor-pointer flex flex-col items-center text-center relative ${isActive ? 'bg-[rgba(var(--accent-main-rgb),0.1)] border-[rgba(var(--accent-main-rgb),0.8)] shadow-[0_0_30px_rgba(var(--accent-main-rgb),0.4)] scale-105 z-10' : 'hover:border-[rgba(var(--accent-main-rgb),0.6)] hover:shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.3)] z-0'}`}
+            className={`relative overflow-hidden transition-all duration-500 cursor-pointer rounded-2xl border ${isActive ? 'bg-[rgba(var(--accent-main-rgb),0.1)] border-[rgba(var(--accent-main-rgb),0.6)] shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.2)]' : 'bg-[rgba(var(--bg-card-rgb),0.6)] border-[rgba(var(--accent-light-rgb),0.1)] hover:border-[rgba(var(--accent-main-rgb),0.3)]'}`}
           >
-            <div className="flex items-center justify-center mb-2">
-              <Icon className={`w-6 h-6 transition-colors duration-500 ${isActive ? 'text-[var(--accent-main)] drop-shadow-[0_0_10px_rgba(var(--accent-main-rgb),0.8)]' : 'text-[var(--accent-main)] drop-shadow-[0_0_5px_rgba(var(--accent-main-rgb),0.3)]'}`} />
-              {isPWA && <TooltipDot text={pwaTooltipText} />}
+            {/* Внутреннее свечение */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[rgba(var(--accent-main-rgb),0.15)] to-transparent opacity-0 transition-opacity duration-500 pointer-events-none" style={{ opacity: isActive ? 1 : 0 }}></div>
+
+            <div className="p-4 flex items-center justify-between relative z-10">
+              <div className="flex items-center gap-4">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 ${isActive ? 'bg-[var(--accent-main)] shadow-[0_0_15px_rgba(var(--accent-main-rgb),0.5)]' : 'bg-[rgba(var(--accent-light-rgb),0.05)] border border-[rgba(var(--accent-light-rgb),0.1)]'}`}>
+                  <Icon className={`w-5 h-5 transition-colors duration-500 ${isActive ? 'text-[var(--bg-main)]' : 'text-[var(--accent-main)]'}`} />
+                </div>
+                <h4 className={`text-[13px] sm:text-[14px] font-bold tracking-wider transition-colors duration-500 ${isActive ? 'text-white' : 'text-slate-300'}`}>{item.name}</h4>
+              </div>
+              <div className="flex items-center shrink-0">
+                {isPWA && <TooltipDot text={pwaTooltipText} />}
+                <div className={`ml-3 w-6 h-6 rounded-full flex items-center justify-center transition-transform duration-500 ${isActive ? 'rotate-180 bg-[rgba(var(--accent-main-rgb),0.2)]' : 'bg-[rgba(var(--accent-light-rgb),0.05)]'}`}>
+                  <ChevronDown className={`w-3 h-3 transition-colors ${isActive ? 'text-[var(--accent-main)]' : 'text-slate-400'}`} />
+                </div>
+              </div>
             </div>
-            <h4 className="text-white text-[11px] font-bold tracking-wider mb-1">{item.name}</h4>
-            <div className={`overflow-hidden transition-all duration-500 ${isActive ? 'max-h-24 opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0'}`}>
-              <p className="text-slate-300 text-[9px] leading-relaxed">{item.desc}</p>
+            
+            <div className={`transition-[max-height,opacity,padding] duration-500 ease-in-out px-4 relative z-10 ${isActive ? 'max-h-32 opacity-100 pb-4' : 'max-h-0 opacity-0 pb-0'}`}>
+              <div className="h-px w-full bg-gradient-to-r from-[rgba(var(--accent-main-rgb),0.5)] to-transparent mb-3"></div>
+              <p className="text-slate-300 text-[11px] sm:text-[12px] leading-relaxed font-serif pl-[3.5rem]">
+                {item.desc}
+              </p>
             </div>
           </div>
         );
@@ -968,7 +982,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
         style={{ transformStyle: 'preserve-3d' }}
       >
         {/* BACKGROUND & IMAGE (Clipped to prevent corners from sticking out) */}
-        <div className="absolute inset-0 w-full h-full rounded-[2.5rem] overflow-hidden clip-corners shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-[var(--bg-card)] border-t-[1.5px] border-l-[1.5px] border-[rgba(255,255,255,0.15)] border-b-[1.5px] border-r-[1.5px] border-b-[rgba(0,0,0,0.4)] border-r-[rgba(0,0,0,0.4)]">
+        <div className={`absolute inset-0 w-full h-full overflow-hidden clip-corners shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-[var(--bg-card)] border-t-[1.5px] border-l-[1.5px] border-[rgba(255,255,255,0.15)] border-b-[1.5px] border-r-[1.5px] border-b-[rgba(0,0,0,0.4)] border-r-[rgba(0,0,0,0.4)] ${isOpen ? 'sm:rounded-[2.5rem] rounded-none' : 'sm:rounded-[2.5rem] rounded-[2rem]'}`}>
           {/* Убрали белый свет от background. Оставляем только базовый цвет под фото */}
           <div className="absolute inset-0 bg-[var(--bg-card)]"></div>
 
@@ -1024,7 +1038,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
         {/* DYNAMIC LIQUID GLASS OVERLAY (Линза ТЕПЕРЬ СВЕРХУ текста) */}
         {!isOpen && (
           <div 
-            className="absolute inset-0 w-full h-full pointer-events-none rounded-[2.5rem] clip-corners z-30"
+            className={`absolute inset-0 w-full h-full pointer-events-none clip-corners z-30 ${isOpen ? 'sm:rounded-[2.5rem] rounded-none' : 'sm:rounded-[2.5rem] rounded-[2rem]'}`}
             style={{
               /* УБРАЛИ transform: translateZ, чтобы линза монолитно сидела на фоне и углы не торчали! */
               background: `
@@ -1046,10 +1060,10 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
       {/* ========================================================================= */}
       {/* 2. ОТКРЫТОЕ СОСТОЯНИЕ (СКРОЛЛ-ЛЕНДИНГ) */}
       {/* ========================================================================= */}
-      <div className={`absolute inset-0 w-full h-full rounded-[2.5rem] clip-corners overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-[var(--bg-grad-mid)] border-[rgba(var(--accent-main-rgb),0.4)] border flex flex-col text-white transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto' : 'opacity-0 translate-y-10 scale-95 pointer-events-none'}`}>
+      <div className={`absolute inset-0 w-full h-full clip-corners overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-[var(--bg-grad-mid)] border-[rgba(var(--accent-main-rgb),0.4)] border-0 sm:border flex flex-col text-white transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto sm:rounded-[2.5rem] rounded-none' : 'opacity-0 translate-y-10 scale-95 pointer-events-none sm:rounded-[2.5rem] rounded-[2rem]'}`}>
         
         {/* === ФОНОВАЯ НАДПИСЬ PREMIUM (ФИКСИРОВАННАЯ И ОБЪЕМНАЯ) === */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[25vw] font-black pointer-events-none z-0 select-none tracking-tighter opacity-80" 
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[15vw] sm:text-[18vw] md:text-[20vw] font-black pointer-events-none z-0 select-none tracking-tight opacity-80 w-full text-center" 
              style={{
                background: `linear-gradient(180deg, rgba(var(--accent-main-rgb), 0.08) 0%, rgba(var(--accent-main-rgb), 0.01) 100%)`,
                WebkitBackgroundClip: 'text',
@@ -1140,7 +1154,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
 
           <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.4)] to-transparent relative z-10 mt-4"></div>
 
-          {/* 3. ТЕХНОЛОГИИ */}
+          {/* 3. ТЕХНОЛОГИИ (НОВЫЙ УЛЬТРА-ПРЕМИУМ ДИЗАЙН) */}
           <div className="flex flex-col animate-in slide-in-from-bottom-4 duration-700 fade-in delay-[400ms] relative z-10">
             <TypewriterHeader text={CONTENT[lang].storytelling.techStack.title} className="text-xl font-serif font-light text-white tracking-wider mb-6 text-center" />
             <TechStack items={CONTENT[lang].storytelling.techStack.items} pwaTooltipText={CONTENT[lang].tooltips.pwa} />
@@ -1614,7 +1628,7 @@ const App = () => {
   };
 
   return (
-    <div className={`fixed inset-0 w-full h-full bg-[var(--bg-main)] flex flex-col font-sans select-none transition-all duration-500 overflow-hidden justify-center items-center p-4 sm:p-8 ${isGlitching ? 'glitch-active' : ''}`}>
+    <div className={`fixed inset-0 w-full h-[100dvh] bg-[var(--bg-main)] flex flex-col font-sans select-none transition-all duration-500 overflow-hidden justify-center items-center ${isOpen ? 'p-0 sm:p-8' : 'p-4 sm:p-8'} ${isGlitching ? 'glitch-active' : ''}`}>
       <style>{globalStyles}</style>
 
       {/* ПРЕМИАЛЬНЫЙ ЧИСТЫЙ ФОН С ПАРЯЩИМИ ЧАСТИЦАМИ */}
@@ -1627,7 +1641,7 @@ const App = () => {
       {/* КОНТЕЙНЕР ВИЗИТКИ */}
       <div 
         ref={cardRef}
-        className={`relative z-10 transition-[max-width,height,width] duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'w-full h-full sm:max-w-[480px] sm:h-[90vh] sm:rounded-[2.5rem]' : 'w-full aspect-[1/1.6] sm:aspect-[1/1.5] cursor-pointer group touch-none'} ${!isOpen && glare.opacity === 0 ? 'animate-float' : ''}`}
+        className={`relative z-10 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'w-full h-[100dvh] sm:max-w-[480px] sm:h-[90dvh] sm:rounded-[2.5rem] rounded-none' : 'w-full max-h-[85dvh] aspect-[1/1.6] sm:aspect-[1/1.5] sm:rounded-[2.5rem] rounded-[2rem] cursor-pointer group touch-none'} ${!isOpen && glare.opacity === 0 ? 'animate-float' : ''}`}
         style={{ maxWidth: isOpen ? '100%' : 'min(22rem, 85vw, 55vh)' }}
         onClick={!isOpen ? handleOpen : undefined}
         onMouseMove={handlePointerMove}
