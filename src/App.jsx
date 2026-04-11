@@ -16,31 +16,28 @@ const hexToRgb = (hex) => {
 // ==========================================
 // 🎨 ПАЛИТРА ЦВЕТОВ (МЕНЯЙТЕ HEX-КОДЫ ЗДЕСЬ!)
 // ==========================================
-// Я вынес все цвета сюда. Чтобы изменить дизайн, просто поменяйте HEX-коды (значения в кавычках).
-// Все свечения, тени и прозрачности подстроятся АВТОМАТИЧЕСКИ!
 const COLORS = {
   // ⬛ ТЕМНЫЕ ФОНОВЫЕ ЦВЕТА
-  bgMain: '#ececd4',        // Основной фон страницы (самый глубокий цвет)
-  bgCard: '#22282b',        // Чуть светлее для краев карточки (чтобы не было грязи)
-  bgModal: '#0e1113',       // Фон модальных окон и глубокие тени
-  bgGradMid: '#1a1f22',     // Тот самый чистый средний цвет, который тебе понравился!
-  bgGradDark: '#1a1f22',    // Сделали низ таким же, чтобы цвета не смешивались в грязь
+  bgMain: '#ececd4',        // Основной фон страницы (снаружи визитки)
+  bgCard: '#22282b',        // Фон лицевой визитки
+  bgModal: '#0e1113',       // Самые глубокие тени
+  bgGradMid: '#1a1f22',     // Средний графитовый цвет для всего лендинга
+  bgGradDark: '#1a1f22',    // Низ лендинга
   
   // 🌟 АКЦЕНТНЫЕ ЦВЕТА (Кнопки, текст, иконки, свечения)
-  accentMain: '#2dd4d4',    // Главный акцентный цвет (чистый циан/бирюзовый)
-  accentLight: '#ffffff'    // Дополнительный светлый акцент (чистый белый для бликов без грязи)
+  accentMain: '#2dd4d4',    // Главный бирюзовый неон
+  accentLight: '#ffffff'    // Чистый белый для текста на кнопках
 };
 
 // ==========================================
-// ⚙️ НАСТРОЙКИ КОНТЕНТА (МЕНЯТЬ ТЕКСТ, ФОТО И ССЫЛКИ ТОЛЬКО ЗДЕСЬ!)
+// ⚙️ НАСТРОЙКИ КОНТЕНТА
 // ==========================================
 const CONTENT = {
-  // 🇷🇺 РУССКИЙ ЯЗЫК
   ru: {
     creator: {
       bgImage: '/bg-creator.jpg',
       avatar: '/avatar-creator.jpg', 
-      audioGreeting: '/greeting.mp3', // 🔊 Ссылка на ваш аудиофайл
+      audioGreeting: '/greeting.mp3', 
       badge: 'DESIGN & CODE',
       name1: 'ЕЛЕНА',
       name2: 'СОТНИКОВА',
@@ -121,7 +118,9 @@ const CONTENT = {
       comparison: {
         title: 'Эволюция статуса',
         before: 'Обычная визитка',
-        after: 'Premium Digital-мир'
+        after: 'Premium Digital-мир',
+        imageBefore: '/before.jpg', 
+        imageAfter: '/after.jpg'    
       },
       timeline: {
         title: 'Путь к результату',
@@ -169,13 +168,11 @@ const CONTENT = {
       saveContact: 'Сохранено с цифровой визитки'
     }
   },
-
-  // 🇬🇧 АНГЛИЙСКИЙ ЯЗЫК
   en: {
     creator: {
       bgImage: '/bg-creator.jpg',
       avatar: '/avatar-creator.jpg', 
-      audioGreeting: '/greeting.mp3', // 🔊 Ссылка на ваш аудиофайл
+      audioGreeting: '/greeting.mp3', 
       badge: 'DESIGN & CODE',
       name1: 'ELENA',
       name2: 'SOTNIKOVA',
@@ -256,7 +253,9 @@ const CONTENT = {
       comparison: {
         title: 'Status Evolution',
         before: 'Standard Card',
-        after: 'Premium Digital World'
+        after: 'Premium Digital World',
+        imageBefore: '/before.jpg', 
+        imageAfter: '/after.jpg'    
       },
       timeline: {
         title: 'Path to Result',
@@ -304,17 +303,14 @@ const CONTENT = {
       saveContact: 'Saved from digital business card'
     }
   },
-
-  // 📊 АНАЛИТИКА (Общая для всех языков)
   analytics: {
     yandexMetricaId: '108395630', 
   }
 };
 
-// --- Глобальные стили для сложных анимаций (вставляем прямо в компонент) ---
+// --- Глобальные стили ---
 const globalStyles = `
   :root {
-    /* 🪄 АВТОМАТИЧЕСКАЯ ГЕНЕРАЦИЯ CSS-ПЕРЕМЕННЫХ ИЗ НАСТРОЕК ВЫШЕ */
     --bg-main: ${COLORS.bgMain};
     --bg-card: ${COLORS.bgCard};
     --bg-modal: ${COLORS.bgModal};
@@ -330,13 +326,6 @@ const globalStyles = `
     --bg-grad-dark-rgb: ${hexToRgb(COLORS.bgGradDark)};
     --accent-main-rgb: ${hexToRgb(COLORS.accentMain)};
     --accent-light-rgb: ${hexToRgb(COLORS.accentLight)};
-
-    --card-h: calc(min(22rem, 50vh) * 1.6);
-  }
-  @media (min-width: 640px) {
-    :root {
-      --card-h: calc(min(22rem, 50vh) * 1.5);
-    }
   }
   html, body {
     background-color: var(--bg-main);
@@ -355,21 +344,21 @@ const globalStyles = `
     overscroll-behavior: contain;
   }
   
-  /* Кастомный элегантный скроллбар (Chrome) */
+  /* Кастомный элегантный скроллбар */
   .custom-scroll::-webkit-scrollbar { width: 4px; }
   .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-  .custom-scroll::-webkit-scrollbar-thumb { background: rgba(var(--accent-light-rgb), 0.4); border-radius: 4px; }
+  .custom-scroll::-webkit-scrollbar-thumb { background: rgba(var(--accent-main-rgb), 0.5); border-radius: 4px; }
 
-  /* Эффект матового стекла Liquid Chrome (Glassmorphism) */
+  /* Эффект матового стекла по всему лендингу */
   .glass-card {
-    background: rgba(var(--bg-card-rgb), 0.6);
+    background: rgba(var(--bg-card-rgb), 0.9);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(var(--accent-light-rgb), 0.15);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(var(--accent-main-rgb), 0.5);
+    box-shadow: 0 0 25px rgba(var(--accent-main-rgb), 0.15), inset 0 0 10px rgba(var(--accent-main-rgb), 0.05);
   }
 
-  /* Анимация переливания жидкого металла */
+  /* Анимация переливания жидкого металла для фона приложения */
   @keyframes liquid-chrome {
     0%, 100% { transform: scale(1) translate(0, 0) rotate(0deg); }
     33% { transform: scale(1.1) translate(5%, 5%) rotate(5deg); }
@@ -392,12 +381,6 @@ const globalStyles = `
   }
   .animate-float {
     animation: float 6s ease-in-out infinite;
-  }
-  .glass-panel {
-    background: rgba(var(--bg-card-rgb), 0.5);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(var(--accent-main-rgb), 0.2);
   }
   .card-preserve-3d {
     transform-style: preserve-3d;
@@ -424,64 +407,6 @@ const globalStyles = `
     filter: hue-rotate(90deg) contrast(150%) invert(80%) saturate(200%);
   }
 
-  @keyframes scroll-left {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-  }
-  .animate-scroll {
-    animation: scroll-left 15s linear infinite;
-  }
-  
-  /* === АНИМАЦИИ ДЛЯ ЭФФЕКТА СГОРАЮЩЕЙ БУМАГИ === */
-  @keyframes burn-mask-reveal {
-    0% { -webkit-mask-position: 100% 0%; mask-position: 100% 0%; }
-    100% { -webkit-mask-position: 0% 100%; mask-position: 0% 100%; }
-  }
-  
-  @keyframes burn-fire-scan {
-    0% { background-position: 100% 0%; opacity: 0; }
-    5% { opacity: 1; }
-    95% { opacity: 1; }
-    100% { background-position: 0% 100%; opacity: 0; }
-  }
-  
-  .smooth-mask-wipe {
-    -webkit-mask-image: linear-gradient(225deg, transparent 47%, rgba(0,0,0,0.6) 49%, black 51%);
-    mask-image: linear-gradient(225deg, transparent 47%, rgba(0,0,0,0.6) 49%, black 51%);
-    -webkit-mask-size: 300% 300%;
-    mask-size: 300% 300%;
-    -webkit-mask-position: 100% 0%;
-    mask-position: 100% 0%;
-    animation: burn-mask-reveal 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    will-change: mask-position, -webkit-mask-position;
-  }
-  
-  .burn-fire-edge {
-    background: 
-      linear-gradient(224deg, 
-        transparent 48.5%, 
-        rgba(20, 5, 0, 0.95) 49%, 
-        var(--burn-c1, rgba(220, 38, 38, 0.9)) 49.5%, 
-        var(--burn-c2, rgba(250, 150, 0, 1)) 50%, 
-        var(--burn-c3, rgba(255, 220, 50, 0.8)) 50.2%,
-        transparent 51%
-      ),
-      linear-gradient(226deg, 
-        transparent 48.5%, 
-        rgba(20, 5, 0, 0.95) 49%, 
-        var(--burn-c1, rgba(220, 38, 38, 0.9)) 49.5%, 
-        var(--burn-c2, rgba(250, 150, 0, 1)) 50%, 
-        var(--burn-c3, rgba(255, 220, 50, 0.8)) 50.2%,
-        transparent 51%
-      );
-    background-size: 300% 300%;
-    background-position: 100% 0%;
-    mix-blend-mode: normal;
-    filter: drop-shadow(0 0 8px var(--burn-c2, rgba(250, 100, 0, 0.8))) blur(0.5px);
-    animation: burn-fire-scan 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    will-change: background-position, opacity;
-  }
-  
   /* === АНИМАЦИИ ФОНА === */
   @keyframes esoteric-slow-drift-1 {
     0%   { transform: rotate(0deg); }
@@ -506,7 +431,7 @@ const globalStyles = `
 `;
 
 // ==========================================
-// ИНТЕРАКТИВНЫЙ СКРЕТЧ-СЛОЙ (ВАУ ЭФФЕКТ)
+// ИНТЕРАКТИВНЫЙ СКРЕТЧ-СЛОЙ
 // ==========================================
 const ScratchCard = ({ children, text }) => {
   const canvasRef = useRef(null);
@@ -518,7 +443,6 @@ const ScratchCard = ({ children, text }) => {
     if (!canvas || isScratched) return;
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     
-    // Создаем "фольгу"
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
     gradient.addColorStop(0, COLORS.bgCard); 
     gradient.addColorStop(0.5, COLORS.bgModal); 
@@ -527,21 +451,19 @@ const ScratchCard = ({ children, text }) => {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Текст поверх
     ctx.font = 'bold 24px Montserrat, sans-serif';
     ctx.fillStyle = COLORS.accentMain;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(text, canvas.width / 2, canvas.height / 2);
     
-    // Режим "стирания"
     ctx.globalCompositeOperation = 'destination-out';
   }, [text, isScratched]);
 
   const handlePointerDown = (e) => { isDrawing.current = true; scratch(e); };
   const handlePointerUp = () => { isDrawing.current = false; checkScratched(); };
   const handlePointerMove = (e) => {
-    if (e.cancelable) e.preventDefault(); // Блокируем скролл во время стирания
+    if (e.cancelable) e.preventDefault(); 
     if (isDrawing.current) scratch(e);
   };
 
@@ -569,7 +491,6 @@ const ScratchCard = ({ children, text }) => {
     for (let i = 3; i < imageData.data.length; i += 4) {
       if (imageData.data[i] === 0) clearPixels++;
     }
-    // Если стерто больше 40%, открываем полностью
     if (clearPixels / (canvas.width * canvas.height) > 0.4) {
       setIsScratched(true);
       if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([30, 30]);
@@ -577,14 +498,14 @@ const ScratchCard = ({ children, text }) => {
   };
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden select-none">
+    <div className="relative w-full rounded-2xl overflow-hidden select-none shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.3)]">
       {children}
       {!isScratched && (
         <canvas
           ref={canvasRef}
           width={600}
           height={300}
-          className="absolute inset-0 w-full h-full cursor-pointer touch-none z-50 transition-opacity duration-1000 border border-[rgba(var(--accent-light-rgb),0.2)] rounded-2xl"
+          className="absolute inset-0 w-full h-full cursor-pointer touch-none z-50 transition-opacity duration-1000 border border-[rgba(var(--accent-main-rgb),0.5)] rounded-2xl"
           onMouseDown={handlePointerDown}
           onMouseUp={handlePointerUp}
           onMouseMove={handlePointerMove}
@@ -599,27 +520,15 @@ const ScratchCard = ({ children, text }) => {
 };
 
 // ==========================================
-// ОБЕРТКА КНОПКИ
-// ==========================================
-const MagneticWrapper = ({ children, className, onClick }) => {
-  // Отключили залипание за пальцем для идеальной работы на мобильном
-  return (
-    <div className={className} onClick={onClick}>
-       {children}
-    </div>
-  );
-};
-
-// ==========================================
-// ПУЛЬСИРУЮЩИЙ ТУЛТИП (ВАУ ЭФФЕКТ)
+// ПУЛЬСИРУЮЩИЙ ТУЛТИП
 // ==========================================
 const TooltipDot = ({ text }) => {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative inline-block ml-2 cursor-pointer" onClick={(e) => { e.stopPropagation(); setOpen(!open); }}>
-      <div className="w-2 h-2 bg-[var(--accent-light)] rounded-full animate-pulse shadow-[0_0_8px_rgba(var(--accent-light-rgb),0.6)]"></div>
+      <div className="w-2 h-2 bg-[var(--accent-main)] rounded-full animate-pulse shadow-[0_0_8px_rgba(var(--accent-main-rgb),0.8)]"></div>
       {open && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-3 bg-[rgba(var(--bg-main-rgb),0.95)] backdrop-blur-xl border border-[rgba(var(--accent-main-rgb),0.4)] rounded-xl text-[10px] text-white shadow-2xl text-center z-50 animate-in fade-in zoom-in">
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-3 bg-[rgba(var(--bg-grad-dark-rgb),0.95)] backdrop-blur-xl border border-[rgba(var(--accent-main-rgb),0.6)] rounded-xl text-[10px] text-white shadow-2xl text-center z-50 animate-in fade-in zoom-in">
           {text}
         </div>
       )}
@@ -628,7 +537,7 @@ const TooltipDot = ({ text }) => {
 };
 
 // ==========================================
-// ЭФФЕКТ ПЕЧАТАЮЩЕЙСЯ МАШИНКИ (ВАУ ЭФФЕКТ)
+// ЭФФЕКТ ПЕЧАТАЮЩЕЙСЯ МАШИНКИ (С ХАКЕРСКИМ КУРСОРОМ)
 // ==========================================
 const TypewriterHeader = ({ text, className }) => {
   const [displayedText, setDisplayedText] = useState("");
@@ -651,7 +560,7 @@ const TypewriterHeader = ({ text, className }) => {
         setDisplayedText(text.slice(0, i + 1));
         i++;
         if (i >= text.length) clearInterval(int);
-      }, 30);
+      }, 40);
       return () => clearInterval(int);
     }
   }, [isVisible, text]);
@@ -659,31 +568,21 @@ const TypewriterHeader = ({ text, className }) => {
   return (
     <h3 ref={ref} className={className}>
       {displayedText}
-      <span className="animate-pulse font-light text-slate-500 opacity-60">|</span>
+      <span className="animate-pulse font-bold text-[var(--accent-main)] drop-shadow-[0_0_8px_rgba(var(--accent-main-rgb),0.8)]">_</span>
     </h3>
   );
 };
 
 // ==========================================
-// 🪄 КОМПОНЕНТ ЭФФЕКТА СГОРАНИЯ С LIQUID GLASS
+// 🪄 КОМПОНЕНТ ФОНА С LIQUID GLASS
 // ==========================================
-const BurnRevealImage = ({ src, className, style, imgClassName = "", burnColor = "chrome", startBurn = true, rotate = {x:0, y:0} }) => {
-  const themes = {
-    default: { c1: 'rgba(220, 38, 38, 0.9)', c2: 'rgba(250, 150, 0, 1)', c3: 'rgba(255, 220, 50, 0.8)' },
-    wine: { c1: 'rgba(88, 11, 37, 0.9)', c2: 'rgba(159, 18, 57, 1)', c3: 'rgba(225, 29, 72, 0.8)' },
-    chrome: { c1: 'rgba(100, 100, 100, 0.9)', c2: 'rgba(200, 200, 200, 1)', c3: 'rgba(255, 255, 255, 0.9)' } 
-  };
-  const t = themes[burnColor] || themes.chrome;
-
-  // Рассчитываем силу искажения жидкого стекла (Liquid Glass) на основе гироскопа/мыши
+const LiquidRevealImage = ({ src, className, style, imgClassName = "", rotate = {x:0, y:0} }) => {
   const liquidDistortion = 2 + (Math.abs(rotate.x) + Math.abs(rotate.y)) * 0.3;
 
   return (
     <div className={`absolute inset-0 pointer-events-none rounded-[2.5rem] ${className}`} style={{ ...style, clipPath: 'inset(0 round 2.5rem)', WebkitClipPath: 'inset(0 round 2.5rem)' }}>
-      
-      {/* SVG фильтр для эффекта жидкого стекла */}
       <svg style={{ position: 'absolute', width: 0, height: 0, pointerEvents: 'none' }} aria-hidden="true">
-        <filter id={`liquid-glass-${burnColor}`}>
+        <filter id="liquid-glass-filter">
           <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="2" result="noise" seed="1" />
           <feDisplacementMap 
             in="SourceGraphic" 
@@ -694,30 +593,22 @@ const BurnRevealImage = ({ src, className, style, imgClassName = "", burnColor =
           />
         </filter>
       </svg>
-
-      <div className={`absolute inset-0 rounded-[2.5rem] ${startBurn ? 'smooth-mask-wipe' : 'opacity-0'}`}>
+      <div className="absolute inset-0 rounded-[2.5rem]">
         <div 
           className={`absolute inset-0 bg-cover bg-center rounded-[2.5rem] ${imgClassName}`}
           style={{ 
             backgroundImage: `url(${src})`,
-            filter: `url(#liquid-glass-${burnColor})`,
-            transform: 'scale(1.05)' // Чтобы не было видно искаженных краев
+            filter: `url(#liquid-glass-filter)`,
+            transform: 'scale(1.05)' 
           }}
         />
       </div>
-
-      {startBurn && (
-        <div 
-          className="absolute inset-0 burn-fire-edge rounded-[2.5rem]" 
-          style={{ '--burn-c1': t.c1, '--burn-c2': t.c2, '--burn-c3': t.c3 }}
-        />
-      )}
     </div>
   );
 };
 
 // ==========================================
-// СТОРИТЕЛЛИНГ БЛОКИ (НОВЫЕ КОМПОНЕНТЫ)
+// СТОРИТЕЛЛИНГ БЛОКИ
 // ==========================================
 
 const AnimatedCounter = ({ end, suffix, label, isOpen }) => {
@@ -735,7 +626,7 @@ const AnimatedCounter = ({ end, suffix, label, isOpen }) => {
 
   useEffect(() => {
     if (!isOpen) {
-      setCount(0); // Сбрасываем счетчик при закрытии
+      setCount(0); 
       return;
     }
     if (!isVisible) return;
@@ -761,10 +652,10 @@ const AnimatedCounter = ({ end, suffix, label, isOpen }) => {
   return (
     <div ref={ref} className="glass-card flex flex-col items-center justify-center p-5 rounded-2xl relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(var(--accent-main-rgb),0.05)_0%,transparent_70%)]"></div>
-      <span className="text-3xl font-serif text-transparent bg-clip-text bg-gradient-to-r from-white to-[var(--accent-main)] font-bold tracking-wider drop-shadow-[0_0_15px_rgba(var(--accent-main-rgb),0.2)] relative z-10">
+      <span className="text-3xl font-serif text-transparent bg-clip-text bg-gradient-to-r from-white to-[var(--accent-main)] font-bold tracking-wider drop-shadow-[0_0_15px_rgba(var(--accent-main-rgb),0.5)] relative z-10">
         {count}{suffix}
       </span>
-      <span className="text-[9px] text-slate-400 uppercase tracking-widest mt-2 text-center font-medium leading-relaxed relative z-10">
+      <span className="text-[9px] text-slate-300 uppercase tracking-widest mt-2 text-center font-medium leading-relaxed relative z-10">
         {label}
       </span>
     </div>
@@ -792,18 +683,22 @@ const BeforeAfterSlider = ({ texts }) => {
       onMouseMove={(e) => e.buttons === 1 && handleMove(e)}
       onTouchMove={handleMove}
     >
-      <div className="absolute inset-0 bg-[rgba(var(--bg-main-rgb),0.8)] flex flex-col items-center justify-center p-4">
-        <div className="w-16 h-10 border border-slate-500/50 rounded mb-2 opacity-30"></div>
-        <span className="text-slate-400 font-serif text-sm tracking-widest">{texts.before}</span>
+      <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${texts.imageBefore || ''})` }}>
+        <div className="absolute inset-0 bg-[rgba(var(--bg-grad-dark-rgb),0.85)] flex flex-col items-center justify-center p-4">
+          <div className="w-16 h-10 border border-slate-500/50 rounded mb-2 opacity-30 relative z-10"></div>
+          <span className="text-slate-400 font-serif text-sm tracking-widest relative z-10">{texts.before}</span>
+        </div>
       </div>
       
       <div 
-        className="absolute inset-0 bg-gradient-to-br from-[var(--bg-card)] via-[var(--bg-grad-mid)] to-[var(--bg-card)] flex flex-col items-center justify-center border-r border-[rgba(var(--accent-main-rgb),0.3)] shadow-[2px_0_20px_rgba(var(--accent-main-rgb),0.15)]"
-        style={{ clipPath: `polygon(0 0, ${sliderVal}% 0, ${sliderVal}% 100%, 0 100%)` }}
+        className="absolute inset-0 bg-cover bg-center border-r border-[rgba(var(--accent-main-rgb),0.5)] shadow-[2px_0_20px_rgba(var(--accent-main-rgb),0.3)]"
+        style={{ clipPath: `polygon(0 0, ${sliderVal}% 0, ${sliderVal}% 100%, 0 100%)`, backgroundImage: `url(${texts.imageAfter || ''})` }}
       >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(var(--accent-light-rgb),0.08)_0%,transparent_60%)]"></div>
-        <Crown className="w-6 h-6 text-[var(--accent-main)] mb-2 drop-shadow-[0_0_8px_rgba(var(--accent-main-rgb),0.3)]" />
-        <span className="text-white font-serif text-sm tracking-widest drop-shadow-[0_0_10px_rgba(0,0,0,0.8)] relative z-10">{texts.after}</span>
+        <div className="absolute inset-0 bg-gradient-to-br from-[rgba(var(--bg-card-rgb),0.8)] via-[rgba(var(--bg-grad-mid-rgb),0.7)] to-[rgba(var(--bg-card-rgb),0.8)] flex flex-col items-center justify-center">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(var(--accent-main-rgb),0.2)_0%,transparent_60%)]"></div>
+          <Crown className="w-6 h-6 text-[var(--accent-main)] mb-2 drop-shadow-[0_0_10px_rgba(var(--accent-main-rgb),0.8)] relative z-10" />
+          <span className="text-white font-serif text-sm tracking-widest drop-shadow-[0_0_10px_rgba(0,0,0,0.8)] relative z-10">{texts.after}</span>
+        </div>
       </div>
       
       <input 
@@ -812,11 +707,11 @@ const BeforeAfterSlider = ({ texts }) => {
         className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-20"
       />
       
-      <div className="absolute top-0 bottom-0 w-[1.5px] bg-[rgba(var(--accent-main-rgb),0.8)] pointer-events-none z-10" style={{ left: `${sliderVal}%` }}>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 bg-[var(--bg-card)] border border-[rgba(var(--accent-main-rgb),0.5)] rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(var(--accent-main-rgb),0.2)]">
+      <div className="absolute top-0 bottom-0 w-[1.5px] bg-[rgba(var(--accent-main-rgb),0.9)] pointer-events-none z-10" style={{ left: `${sliderVal}%` }}>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 bg-[var(--bg-card)] border border-[rgba(var(--accent-main-rgb),0.8)] rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.5)]">
            <div className="flex gap-0.5">
-             <div className="w-[1.5px] h-3 bg-[rgba(var(--accent-main-rgb),0.8)] rounded-full"></div>
-             <div className="w-[1.5px] h-3 bg-[rgba(var(--accent-main-rgb),0.8)] rounded-full"></div>
+             <div className="w-[1.5px] h-3 bg-[rgba(var(--accent-main-rgb),0.9)] rounded-full"></div>
+             <div className="w-[1.5px] h-3 bg-[rgba(var(--accent-main-rgb),0.9)] rounded-full"></div>
            </div>
         </div>
       </div>
@@ -826,10 +721,10 @@ const BeforeAfterSlider = ({ texts }) => {
 
 const ProcessTimeline = ({ steps }) => {
   return (
-    <div className="flex flex-col gap-6 relative before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-px before:bg-gradient-to-b before:from-[rgba(var(--accent-main-rgb),0.5)] before:via-[rgba(var(--accent-light-rgb),0.3)] before:to-transparent">
+    <div className="flex flex-col gap-6 relative before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-px before:bg-gradient-to-b before:from-[rgba(var(--accent-main-rgb),0.8)] before:via-[rgba(var(--accent-main-rgb),0.3)] before:to-transparent">
       {steps.map((step, idx) => (
         <div key={idx} className="flex gap-5 relative group animate-in slide-in-from-bottom-4 duration-700 fade-in" style={{ animationDelay: `${idx * 100}ms` }}>
-          <div className="w-10 h-10 rounded-full bg-[rgba(var(--bg-card-rgb),0.8)] border border-[rgba(var(--accent-light-rgb),0.3)] group-hover:border-[rgba(var(--accent-main-rgb),0.6)] flex items-center justify-center shrink-0 z-10 shadow-[0_0_15px_rgba(var(--accent-light-rgb),0.05)] group-hover:shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.15)] transition-all duration-500">
+          <div className="w-10 h-10 rounded-full bg-[rgba(var(--bg-card-rgb),0.9)] border border-[rgba(var(--accent-main-rgb),0.5)] group-hover:border-[rgba(var(--accent-main-rgb),0.9)] flex items-center justify-center shrink-0 z-10 shadow-[0_0_15px_rgba(var(--accent-main-rgb),0.2)] group-hover:shadow-[0_0_25px_rgba(var(--accent-main-rgb),0.5)] transition-all duration-500">
             <span className="text-slate-300 font-serif text-sm font-bold group-hover:text-[var(--accent-main)] transition-colors">{idx + 1}</span>
           </div>
           <div className="pt-1.5 pb-2">
@@ -859,10 +754,10 @@ const TechStack = ({ items, pwaTooltipText }) => {
             onMouseEnter={() => setActiveIndex(idx)}
             onMouseLeave={() => setActiveIndex(null)}
             onClick={() => setActiveIndex(isActive ? null : idx)}
-            className={`glass-card p-4 rounded-2xl transition-all duration-500 cursor-pointer flex flex-col items-center text-center relative ${isActive ? 'bg-[rgba(var(--accent-light-rgb),0.1)] border-[rgba(var(--accent-light-rgb),0.4)] shadow-[0_0_20px_rgba(var(--accent-light-rgb),0.15)] scale-105 z-10' : 'hover:border-[rgba(var(--accent-main-rgb),0.3)] hover:bg-[rgba(var(--bg-card-rgb),0.5)] z-0'}`}
+            className={`glass-card p-4 rounded-2xl transition-all duration-500 cursor-pointer flex flex-col items-center text-center relative ${isActive ? 'bg-[rgba(var(--accent-main-rgb),0.1)] border-[rgba(var(--accent-main-rgb),0.8)] shadow-[0_0_30px_rgba(var(--accent-main-rgb),0.4)] scale-105 z-10' : 'hover:border-[rgba(var(--accent-main-rgb),0.6)] hover:shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.3)] z-0'}`}
           >
             <div className="flex items-center justify-center mb-2">
-              <Icon className={`w-6 h-6 transition-colors duration-500 ${isActive ? 'text-[var(--accent-main)] drop-shadow-[0_0_8px_rgba(var(--accent-main-rgb),0.4)]' : 'text-slate-400'}`} />
+              <Icon className={`w-6 h-6 transition-colors duration-500 ${isActive ? 'text-[var(--accent-main)] drop-shadow-[0_0_10px_rgba(var(--accent-main-rgb),0.8)]' : 'text-[var(--accent-main)] drop-shadow-[0_0_5px_rgba(var(--accent-main-rgb),0.3)]'}`} />
               {isPWA && <TooltipDot text={pwaTooltipText} />}
             </div>
             <h4 className="text-white text-[11px] font-bold tracking-wider mb-1">{item.name}</h4>
@@ -883,18 +778,18 @@ const FAQAccordion = ({ items }) => {
       {items.map((item, idx) => {
         const isOpen = openIdx === idx;
         return (
-          <div key={idx} className={`glass-card transition-all duration-300 rounded-2xl overflow-hidden ${isOpen ? 'bg-[rgba(var(--bg-card-rgb),0.8)] border-[rgba(var(--accent-light-rgb),0.3)]' : ''}`}>
+          <div key={idx} className={`glass-card transition-all duration-300 rounded-2xl overflow-hidden ${isOpen ? 'bg-[rgba(var(--bg-card-rgb),0.9)] border-[rgba(var(--accent-main-rgb),0.8)] shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.3)]' : ''}`}>
             <button 
               onClick={() => setOpenIdx(isOpen ? null : idx)} 
               className="w-full flex justify-between items-center p-4 text-left"
             >
-              <span className={`text-[11px] font-medium tracking-wide pr-4 transition-colors ${isOpen ? 'text-[var(--accent-main)]' : 'text-slate-200'}`}>{item.q}</span>
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180 bg-[rgba(var(--accent-main-rgb),0.2)]' : 'bg-[var(--bg-main)]'}`}>
-                <ChevronDown className={`w-3 h-3 ${isOpen ? 'text-[var(--accent-main)]' : 'text-slate-400'}`} />
+              <span className={`text-[11px] font-medium tracking-wide pr-4 transition-colors ${isOpen ? 'text-[var(--accent-main)] drop-shadow-[0_0_5px_rgba(var(--accent-main-rgb),0.5)]' : 'text-slate-200'}`}>{item.q}</span>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180 bg-[rgba(var(--accent-main-rgb),0.2)]' : 'bg-[rgba(var(--bg-grad-dark-rgb),0.5)]'}`}>
+                <ChevronDown className={`w-3 h-3 text-[var(--accent-main)]`} />
               </div>
             </button>
-            <div className={`transition-all duration-500 ease-in-out ${isOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
-              <p className="px-4 pb-4 text-[10px] text-slate-300 leading-relaxed border-t border-[rgba(var(--accent-light-rgb),0.2)] pt-3 mt-1">
+            <div className={`transition-[max-height,opacity] duration-500 ease-in-out ${isOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+              <p className="px-4 pb-4 text-[10px] text-slate-300 leading-relaxed border-t border-[rgba(var(--accent-main-rgb),0.2)] pt-3 mt-1">
                 {item.a}
               </p>
             </div>
@@ -915,7 +810,6 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate }) => {
   const scrollContainerRef = useRef(null);
   const ultraRef = useRef(null);
 
-  // Логика скролла (Прогресс-бар и Параллакс)
   const handleScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
     const progress = (scrollTop / (scrollHeight - clientHeight)) * 100;
@@ -923,7 +817,6 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate }) => {
     e.target.style.setProperty('--scroll-progress', `${progress}%`);
   };
 
-  // Смена цвета при доходе до ULTRA
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
       setIsUltraVisible(entry.isIntersecting);
@@ -938,7 +831,6 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate }) => {
     window.location.href = CONTENT[lang].leadMagnet.link;
   };
 
-  // ПАСХАЛКА
   const handleCrownClick = (e) => {
     e.stopPropagation();
     const newClicks = crownClicks + 1;
@@ -949,10 +841,28 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate }) => {
     }
   };
 
+  // Все тарифы используют этот единый "светящийся" дизайн
+  const renderTariff = (Icon, title, desc, ref = null) => (
+    <div ref={ref} className="p-1 rounded-2xl bg-gradient-to-r from-[rgba(var(--bg-card-rgb),0.4)] via-[rgba(var(--accent-main-rgb),0.5)] to-[rgba(var(--bg-card-rgb),0.4)] shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.3)]">
+      <div className="bg-[rgba(var(--bg-card-rgb),0.95)] backdrop-blur-xl p-5 rounded-xl border border-[rgba(var(--accent-main-rgb),0.5)] flex flex-col transition-all hover:bg-[rgba(var(--bg-card-rgb),0.8)]">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-8 h-8 rounded-full bg-[rgba(var(--accent-main-rgb),0.1)] border border-[rgba(var(--accent-main-rgb),0.6)] flex items-center justify-center shadow-[0_0_15px_rgba(var(--accent-main-rgb),0.4)]">
+            <Icon className="w-4 h-4 text-[var(--accent-main)]" />
+          </div>
+          <div className="flex items-center">
+            <h3 className="text-lg font-serif font-light text-white tracking-wider drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">{title}</h3>
+            {ref && <TooltipDot text={CONTENT[lang].tooltips.ultra} />}
+          </div>
+        </div>
+        <p className="font-serif text-[11px] text-slate-300 leading-relaxed pl-11">{desc}</p>
+      </div>
+    </div>
+  );
+
   return (
     <>
       {/* ========================================================================= */}
-      {/* 1. ЗАКРЫТОЕ СОСТОЯНИЕ (ЛИЦЕВАЯ СТОРОНА) - LIQUID CHROME + ОБЪЕМНОЕ СТЕКЛО */}
+      {/* 1. ЗАКРЫТОЕ СОСТОЯНИЕ (ЛИЦЕВАЯ СТОРОНА) - LIQUID GLASS + ОБЪЕМНОЕ СТЕКЛО */}
       {/* ========================================================================= */}
       <div className={`absolute inset-0 w-full h-full card-backface-hidden rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5),inset_0_4px_15px_rgba(255,255,255,0.1),inset_0_-4px_20px_rgba(0,0,0,0.6),inset_2px_0_10px_rgba(255,255,255,0.05),inset_-2px_0_10px_rgba(0,0,0,0.4)] border-t-[1.5px] border-l-[1.5px] border-[rgba(255,255,255,0.15)] border-b-[1.5px] border-r-[1.5px] border-b-[rgba(0,0,0,0.4)] border-r-[rgba(0,0,0,0.4)] overflow-hidden bg-[var(--bg-card)] text-white flex flex-col p-6 group-hover:shadow-[0_30px_60px_rgba(0,0,0,0.6),inset_0_4px_15px_rgba(255,255,255,0.15),inset_0_-4px_20px_rgba(0,0,0,0.6)] transition-[transform,opacity] duration-500 ease-out ${isOpen ? 'opacity-0 pointer-events-none scale-110' : 'opacity-100 scale-100'}`}>
         
@@ -960,15 +870,15 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate }) => {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[rgba(var(--accent-main-rgb),0.15)] via-transparent to-transparent mix-blend-screen"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-grad-dark)] from-0% via-[rgba(var(--bg-grad-dark-rgb),0.8)] via-[15%] to-transparent to-[30%] pointer-events-none z-0 rounded-[2.5rem]"></div>
 
-        <BurnRevealImage src={CONTENT[lang].creator.bgImage} className="grayscale-[0.3]" burnColor="chrome" startBurn={true} rotate={rotate} />
+        <LiquidRevealImage src={CONTENT[lang].creator.bgImage} className="grayscale-[0.3]" rotate={rotate} />
 
         <div className="relative z-10 flex flex-col h-full justify-between">
           <div className="flex justify-between items-start">
             <div onClick={handleCrownClick} className="bg-[rgba(var(--bg-grad-dark-rgb),0.8)] backdrop-blur-md px-4 py-2 rounded-full border border-[rgba(var(--accent-main-rgb),0.3)] flex items-center gap-2 cursor-pointer active:scale-95 transition-transform">
-              <Crown className="w-4 h-4 text-[var(--accent-main)]" />
+              <Crown className="w-4 h-4 text-[var(--accent-main)] drop-shadow-[0_0_5px_rgba(var(--accent-main-rgb),0.8)]" />
               <span className="text-xs font-serif tracking-widest uppercase text-slate-200">{CONTENT[lang].creator.badge}</span>
             </div>
-            <Code2 className="w-8 h-8 text-slate-500 drop-shadow-[0_0_10px_rgba(var(--accent-light-rgb),0.3)]" />
+            <Code2 className="w-8 h-8 text-[var(--accent-main)] drop-shadow-[0_0_10px_rgba(var(--accent-main-rgb),0.5)]" />
           </div>
 
           <div className="text-center pb-2">
@@ -978,11 +888,11 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate }) => {
               {CONTENT[lang].creator.name2}
             </h2>
             <div className="flex flex-col items-center gap-3 mt-3">
-              <p className="font-serif text-[11px] text-slate-300 italic tracking-wider max-w-[80%] mx-auto">
+              <p className="font-serif text-[11px] text-slate-300 italic tracking-wider max-w-[80%] mx-auto drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                 "{CONTENT[lang].creator.quote1} {CONTENT[lang].creator.quote2}"
               </p>
-              <div className="flex items-center gap-1.5 bg-[rgba(var(--bg-grad-dark-rgb),0.8)] px-3 py-1.5 rounded-full border border-[rgba(var(--accent-light-rgb),0.3)] mt-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-main)] animate-pulse shadow-[0_0_8px_rgba(var(--accent-main-rgb),0.6)]"></span>
+              <div className="flex items-center gap-1.5 bg-[rgba(var(--bg-grad-dark-rgb),0.8)] px-3 py-1.5 rounded-full border border-[rgba(var(--accent-main-rgb),0.4)] mt-1 shadow-[0_0_15px_rgba(var(--accent-main-rgb),0.2)]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-main)] animate-pulse shadow-[0_0_8px_rgba(var(--accent-main-rgb),0.8)]"></span>
                 <span className="text-[9px] font-bold uppercase tracking-widest text-slate-200">{CONTENT[lang].creator.status}</span>
               </div>
             </div>
@@ -991,31 +901,31 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate }) => {
       </div>
 
       {/* ========================================================================= */}
-      {/* 2. ОТКРЫТОЕ СОСТОЯНИЕ (СКРОЛЛ-ЛЕНДИНГ) - LIQUID CHROME */}
+      {/* 2. ОТКРЫТОЕ СОСТОЯНИЕ (СКРОЛЛ-ЛЕНДИНГ) */}
       {/* ========================================================================= */}
-      <div className={`absolute inset-0 w-full h-full rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col text-white transition-[transform,opacity] duration-500 ease-out ${isUltraVisible ? 'bg-[var(--bg-modal)] border-[rgba(var(--accent-main-rgb),0.4)]' : 'bg-[var(--bg-grad-mid)] border-[rgba(var(--accent-main-rgb),0.2)]'} border ${isOpen ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto' : 'opacity-0 translate-y-10 scale-95 pointer-events-none'}`}>
+      <div className={`absolute inset-0 w-full h-full rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col text-white transition-[transform,opacity] duration-500 ease-out bg-[var(--bg-grad-mid)] border-[rgba(var(--accent-main-rgb),0.4)] border ${isOpen ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto' : 'opacity-0 translate-y-10 scale-95 pointer-events-none'}`}>
         
         {/* ПРОГРЕСС БАР СВЕРХУ */}
-        <div className="absolute top-0 left-0 h-1 bg-gradient-to-r from-[var(--accent-light)] via-[var(--accent-main)] to-[var(--accent-main)] z-50 transition-all duration-300" style={{ width: 'var(--scroll-progress, 0%)' }}></div>
+        <div className="absolute top-0 left-0 h-1 bg-gradient-to-r from-[var(--accent-light)] via-[var(--accent-main)] to-[var(--accent-main)] z-50 transition-all duration-300 shadow-[0_0_10px_rgba(var(--accent-main-rgb),0.8)]" style={{ width: 'var(--scroll-progress, 0%)' }}></div>
 
         {/* ФОН (Медленные орбиты и Аура) */}
-        <div className="absolute -top-[20%] -left-[20%] w-[160%] aspect-square rounded-full border border-[rgba(var(--accent-light-rgb),0.1)] border-dashed pointer-events-none transition-colors duration-1000" style={{ animation: 'esoteric-slow-drift-1 90s linear infinite', transformOrigin: '45% 55%', borderColor: isUltraVisible ? 'rgba(var(--accent-main-rgb),0.3)' : '' }}></div>
-        <div className="absolute -bottom-[30%] -right-[30%] w-[140%] aspect-square rounded-full border-[1.5px] border-[rgba(var(--accent-main-rgb),0.05)] pointer-events-none transition-colors duration-1000" style={{ animation: 'esoteric-slow-drift-2 100s linear infinite', transformOrigin: '55% 45%', borderColor: isUltraVisible ? 'rgba(var(--accent-light-rgb),0.2)' : '' }}></div>
-        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] aspect-square rounded-full blur-[50px] pointer-events-none transition-colors duration-1000 ${isUltraVisible ? 'bg-[rgba(var(--accent-main-rgb),0.1)]' : 'bg-[rgba(var(--accent-main-rgb),0.05)]'}`}></div>
+        <div className="absolute -top-[20%] -left-[20%] w-[160%] aspect-square rounded-full border border-[rgba(var(--accent-main-rgb),0.15)] border-dashed pointer-events-none transition-colors duration-1000" style={{ animation: 'esoteric-slow-drift-1 90s linear infinite', transformOrigin: '45% 55%' }}></div>
+        <div className="absolute -bottom-[30%] -right-[30%] w-[140%] aspect-square rounded-full border-[1.5px] border-[rgba(var(--accent-main-rgb),0.1)] pointer-events-none transition-colors duration-1000" style={{ animation: 'esoteric-slow-drift-2 100s linear infinite', transformOrigin: '55% 45%' }}></div>
+        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] aspect-square rounded-full blur-[60px] pointer-events-none transition-colors duration-1000 bg-[rgba(var(--accent-main-rgb),0.1)]`}></div>
 
         {/* === ПЛАВАЮЩАЯ ШАПКА === */}
-        <div className={`shrink-0 pt-8 pb-4 px-6 flex justify-between items-center relative z-20 transition-colors duration-1000 ${isUltraVisible ? 'bg-gradient-to-b from-[var(--bg-modal)] to-transparent' : 'bg-gradient-to-b from-[var(--bg-grad-mid)] to-transparent'}`}>
+        <div className={`shrink-0 pt-8 pb-4 px-6 flex justify-between items-center relative z-20 transition-colors duration-1000 bg-gradient-to-b from-[var(--bg-grad-dark)] to-transparent`}>
           <div className="flex items-center gap-3">
-            <div className="glass-card px-3 py-1.5 rounded-full flex items-center gap-2 shadow-[0_0_10px_rgba(var(--accent-light-rgb),0.05)]">
-              <Crown className={`w-3.5 h-3.5 transition-colors duration-1000 ${isUltraVisible ? 'text-[var(--accent-main)]' : 'text-slate-400'}`} />
+            <div className="glass-card px-3 py-1.5 rounded-full flex items-center gap-2">
+              <Crown className={`w-3.5 h-3.5 transition-colors duration-1000 text-[var(--accent-main)] drop-shadow-[0_0_5px_rgba(var(--accent-main-rgb),0.8)]`} />
               <span className="text-[10px] font-serif tracking-widest uppercase text-slate-200">{CONTENT[lang].creator.badge}</span>
             </div>
           </div>
           <button 
             onClick={onClose} 
-            className="w-9 h-9 rounded-full glass-card flex items-center justify-center text-slate-400 hover:text-[var(--accent-light)] hover:scale-105 active:scale-95 transition-all shadow-[0_0_15px_rgba(var(--accent-light-rgb),0.05)]"
+            className="w-9 h-9 rounded-full glass-card flex items-center justify-center text-[var(--accent-main)] hover:scale-105 active:scale-95 transition-all shadow-[0_0_15px_rgba(var(--accent-main-rgb),0.3)]"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4 drop-shadow-[0_0_5px_rgba(var(--accent-main-rgb),0.8)]" />
           </button>
         </div>
 
@@ -1026,28 +936,28 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate }) => {
           ref={scrollContainerRef}
         >
           {/* ПАРАЛЛАКС ЗАГОЛОВОК НА ФОНЕ */}
-          <div className="absolute top-[10%] left-1/2 -translate-x-1/2 text-[20vw] font-black text-[rgba(var(--accent-light-rgb),0.03)] pointer-events-none z-0 select-none tracking-tighter" style={{ transform: 'translate(-50%, calc(var(--scroll-y, 0px) * 0.4))' }}>
+          <div className="absolute top-[10%] left-1/2 -translate-x-1/2 text-[20vw] font-black text-[rgba(var(--accent-main-rgb),0.04)] pointer-events-none z-0 select-none tracking-tighter" style={{ transform: 'translate(-50%, calc(var(--scroll-y, 0px) * 0.4))' }}>
             PREMIUM
           </div>
           
           {/* 1. ФИЛОСОФИЯ */}
           <div className="flex flex-col items-center text-center mt-2 animate-in slide-in-from-bottom-4 duration-700 fade-in delay-100 relative z-10">
-            <div className="w-12 h-12 rounded-full glass-card flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(var(--accent-light-rgb),0.1)]">
-              <UserCircle2 className="w-6 h-6 text-[var(--accent-main)]" />
+            <div className="w-12 h-12 rounded-full glass-card flex items-center justify-center mb-4">
+              <UserCircle2 className="w-6 h-6 text-[var(--accent-main)] drop-shadow-[0_0_8px_rgba(var(--accent-main-rgb),0.6)]" />
             </div>
             <TypewriterHeader text={CONTENT[lang].views.profile.title} className="text-2xl font-serif font-light text-white tracking-wider mb-4" />
             <p className="font-serif text-[12px] text-slate-300 leading-relaxed glass-card p-5 rounded-2xl w-full mb-5">
               {CONTENT[lang].views.profile.desc}
             </p>
-            <MagneticWrapper onClick={() => window.open(CONTENT[lang].creator.websiteLink, '_blank')} className="cursor-pointer">
-              <div className="bg-[rgba(var(--bg-card-rgb),0.5)] border border-[rgba(var(--accent-light-rgb),0.3)] hover:border-[rgba(var(--accent-main-rgb),0.5)] text-slate-200 text-[10px] uppercase tracking-[0.2em] py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] group">
-                <Globe className="w-4 h-4 text-[var(--accent-main)] group-hover:animate-pulse" />
+            <div onClick={() => window.open(CONTENT[lang].creator.websiteLink, '_blank')} className="cursor-pointer">
+              <div className="glass-card text-[var(--accent-main)] text-[10px] uppercase tracking-[0.2em] py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 group">
+                <Globe className="w-4 h-4 group-hover:animate-pulse drop-shadow-[0_0_5px_rgba(var(--accent-main-rgb),0.5)]" />
                 {CONTENT[lang].creator.websiteText}
               </div>
-            </MagneticWrapper>
+            </div>
           </div>
 
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-light-rgb),0.2)] to-transparent relative z-10"></div>
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.4)] to-transparent relative z-10"></div>
 
           {/* БЛОК: СТАТИСТИКА (Счетчики) */}
           <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-bottom-4 duration-700 fade-in delay-200 relative z-10">
@@ -1056,7 +966,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate }) => {
             ))}
           </div>
 
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.2)] to-transparent relative z-10"></div>
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.4)] to-transparent relative z-10"></div>
 
           {/* БЛОК: СРАВНЕНИЕ (Было/Стало) */}
           <div className="flex flex-col items-center text-center animate-in slide-in-from-bottom-4 duration-700 fade-in delay-200 relative z-10">
@@ -1064,7 +974,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate }) => {
             <BeforeAfterSlider texts={CONTENT[lang].storytelling.comparison} />
           </div>
 
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-light-rgb),0.2)] to-transparent relative z-10"></div>
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.4)] to-transparent relative z-10"></div>
 
           {/* БЛОК: ПУТЬ КЛИЕНТА (Таймлайн) */}
           <div className="flex flex-col animate-in slide-in-from-bottom-4 duration-700 fade-in delay-200 relative z-10">
@@ -1072,61 +982,17 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate }) => {
             <ProcessTimeline steps={CONTENT[lang].storytelling.timeline.steps} />
           </div>
 
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.2)] to-transparent relative z-10"></div>
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.4)] to-transparent relative z-10"></div>
 
-          {/* 2. ТАРИФЫ */}
+          {/* 2. ТАРИФЫ (ВСЕ СВЕТЯТСЯ КАК ULTRA) */}
           <div className="flex flex-col gap-4 animate-in slide-in-from-bottom-4 duration-700 fade-in delay-[300ms] relative z-10">
-            {/* Nano */}
-            <div className="glass-card p-5 rounded-2xl flex flex-col transition-all hover:bg-[rgba(var(--bg-card-rgb),0.8)]">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 rounded-full bg-[var(--bg-main)] border border-[rgba(var(--accent-light-rgb),0.3)] flex items-center justify-center shadow-inner">
-                  <Diamond className="w-4 h-4 text-[var(--accent-light)]" />
-                </div>
-                <h3 className="text-lg font-serif font-light text-white tracking-wider">{CONTENT[lang].views.nano.title}</h3>
-              </div>
-              <p className="font-serif text-[11px] text-slate-300 leading-relaxed pl-11">{CONTENT[lang].views.nano.desc}</p>
-            </div>
-            
-            {/* Pro */}
-            <div className="glass-card p-5 rounded-2xl flex flex-col transition-all hover:bg-[rgba(var(--bg-card-rgb),0.8)]">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 rounded-full bg-[var(--bg-main)] border border-[rgba(var(--accent-light-rgb),0.3)] flex items-center justify-center shadow-inner">
-                  <Rocket className="w-4 h-4 text-[var(--accent-light)]" />
-                </div>
-                <h3 className="text-lg font-serif font-light text-white tracking-wider">{CONTENT[lang].views.pro.title}</h3>
-              </div>
-              <p className="font-serif text-[11px] text-slate-300 leading-relaxed pl-11">{CONTENT[lang].views.pro.desc}</p>
-            </div>
-
-            {/* Lend */}
-            <div className="glass-card p-5 rounded-2xl flex flex-col transition-all hover:bg-[rgba(var(--bg-card-rgb),0.8)]">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 rounded-full bg-[var(--bg-main)] border border-[rgba(var(--accent-light-rgb),0.3)] flex items-center justify-center shadow-inner">
-                  <Globe className="w-4 h-4 text-[var(--accent-light)]" />
-                </div>
-                <h3 className="text-lg font-serif font-light text-white tracking-wider">{CONTENT[lang].views.lend.title}</h3>
-              </div>
-              <p className="font-serif text-[11px] text-slate-300 leading-relaxed pl-11">{CONTENT[lang].views.lend.desc}</p>
-            </div>
-            
-            {/* Ultra (Триггер смены цвета) */}
-            <div ref={ultraRef} className="p-1 rounded-2xl bg-gradient-to-r from-[rgba(var(--bg-card-rgb),0.4)] via-[rgba(var(--accent-main-rgb),0.3)] to-[rgba(var(--bg-card-rgb),0.4)] shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.15)]">
-              <div className="bg-[rgba(var(--bg-card-rgb),0.9)] backdrop-blur-xl p-5 rounded-xl border border-[rgba(var(--accent-main-rgb),0.4)] flex flex-col transition-all hover:bg-[var(--bg-card)]">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-[rgba(var(--accent-main-rgb),0.2)] border border-[rgba(var(--accent-main-rgb),0.5)] flex items-center justify-center shadow-[0_0_15px_rgba(var(--accent-main-rgb),0.2)]">
-                    <Crown className="w-4 h-4 text-[var(--accent-main)]" />
-                  </div>
-                  <div className="flex items-center">
-                    <h3 className="text-lg font-serif font-light text-white tracking-wider">{CONTENT[lang].views.ultra.title}</h3>
-                    <TooltipDot text={CONTENT[lang].tooltips.ultra} />
-                  </div>
-                </div>
-                <p className="font-serif text-[11px] text-slate-300 leading-relaxed pl-11">{CONTENT[lang].views.ultra.desc}</p>
-              </div>
-            </div>
+            {renderTariff(Diamond, CONTENT[lang].views.nano.title, CONTENT[lang].views.nano.desc)}
+            {renderTariff(Rocket, CONTENT[lang].views.pro.title, CONTENT[lang].views.pro.desc)}
+            {renderTariff(Globe, CONTENT[lang].views.lend.title, CONTENT[lang].views.lend.desc)}
+            {renderTariff(Crown, CONTENT[lang].views.ultra.title, CONTENT[lang].views.ultra.desc, ultraRef)}
           </div>
 
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-light-rgb),0.2)] to-transparent relative z-10"></div>
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.4)] to-transparent relative z-10"></div>
 
           {/* 3. ТЕХНОЛОГИИ */}
           <div className="flex flex-col animate-in slide-in-from-bottom-4 duration-700 fade-in delay-[400ms] relative z-10">
@@ -1134,7 +1000,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate }) => {
             <TechStack items={CONTENT[lang].storytelling.techStack.items} pwaTooltipText={CONTENT[lang].tooltips.pwa} />
           </div>
 
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.2)] to-transparent relative z-10"></div>
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.4)] to-transparent relative z-10"></div>
 
           {/* БЛОК: FAQ (Аккордеон) */}
           <div className="flex flex-col animate-in slide-in-from-bottom-4 duration-700 fade-in delay-[500ms] relative z-10">
@@ -1142,12 +1008,12 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate }) => {
             <FAQAccordion items={CONTENT[lang].storytelling.faq.items} />
           </div>
 
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-light-rgb),0.2)] to-transparent relative z-10"></div>
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.4)] to-transparent relative z-10"></div>
 
           {/* 4. ЛИД-МАГНИТ С ИНТЕРАКТИВНЫМ СКРЕТЧ-СЛОЕМ */}
           <div className="flex flex-col items-center text-center animate-in slide-in-from-bottom-4 duration-700 fade-in delay-[600ms] relative z-10">
-            <div className="w-14 h-14 rounded-full glass-card flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(var(--accent-light-rgb),0.15)]">
-              <Gift className="w-7 h-7 text-[var(--accent-light)] animate-bounce" />
+            <div className="w-14 h-14 rounded-full glass-card flex items-center justify-center mb-4">
+              <Gift className="w-7 h-7 text-[var(--accent-main)] drop-shadow-[0_0_10px_rgba(var(--accent-main-rgb),0.8)] animate-bounce" />
             </div>
             <TypewriterHeader text={CONTENT[lang].leadMagnet.title} className="text-2xl font-serif font-light text-white tracking-wider mb-3" />
             
@@ -1156,23 +1022,23 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate }) => {
                 <p className="font-serif text-[12px] text-slate-300 leading-relaxed w-full mb-6">
                   {CONTENT[lang].leadMagnet.description}
                 </p>
-                <MagneticWrapper onClick={handlePromoClick} className="w-full max-w-[280px] cursor-pointer">
-                  <div className="bg-gradient-to-r from-[var(--accent-light)] to-[var(--accent-main)] hover:from-[var(--accent-main)] hover:to-[var(--accent-light)] text-slate-900 text-[11px] font-bold uppercase tracking-widest py-4 rounded-xl flex items-center justify-center transition-all shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.2)] border border-[rgba(var(--accent-main-rgb),0.5)] group active:scale-95">
+                <div onClick={handlePromoClick} className="w-full max-w-[280px] cursor-pointer active:scale-95 transition-transform">
+                  <div className="bg-gradient-to-r from-[var(--accent-light)] to-[var(--accent-main)] text-slate-900 text-[11px] font-bold uppercase tracking-widest py-4 rounded-xl flex items-center justify-center transition-all shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.5)] border border-[rgba(var(--accent-main-rgb),0.8)] group">
                     <Crown className="w-4 h-4 mr-2 text-slate-900 group-hover:scale-110 transition-transform" />
                     {CONTENT[lang].leadMagnet.buttonText}
                   </div>
-                </MagneticWrapper>
+                </div>
               </div>
             </ScratchCard>
           </div>
 
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.2)] to-transparent relative z-10"></div>
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--accent-main-rgb),0.4)] to-transparent relative z-10"></div>
 
           {/* 5. ОТЗЫВЫ (БЕСКОНЕЧНЫЙ ГОРИЗОНТАЛЬНЫЙ СКРОЛЛ) */}
           <div className="flex flex-col animate-in slide-in-from-bottom-4 duration-700 fade-in delay-[700ms] relative z-10">
             <div className="flex items-center justify-center gap-3 mb-6 shrink-0">
-              <div className="w-10 h-10 rounded-full glass-card flex items-center justify-center shadow-[0_0_15px_rgba(var(--accent-main-rgb),0.1)]">
-                <Star className="w-5 h-5 text-[var(--accent-main)]" />
+              <div className="w-10 h-10 rounded-full glass-card flex items-center justify-center">
+                <Star className="w-5 h-5 text-[var(--accent-main)] drop-shadow-[0_0_8px_rgba(var(--accent-main-rgb),0.8)]" />
               </div>
               <TypewriterHeader text={CONTENT[lang].views.reviewsTitle} className="text-2xl font-serif font-light text-white tracking-wider" />
             </div>
@@ -1180,13 +1046,13 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate }) => {
             <div className="overflow-hidden w-full relative pb-4">
               <div className="flex w-max animate-marquee space-x-4 hover:[animation-play-state:paused]">
                 {[...CONTENT[lang].views.reviews, ...CONTENT[lang].views.reviews].map((review, idx) => (
-                  <div key={idx} className="glass-card p-5 rounded-2xl w-[280px] shrink-0 whitespace-normal shadow-sm cursor-grab active:cursor-grabbing border border-[rgba(var(--accent-light-rgb),0.2)]">
+                  <div key={idx} className="glass-card p-5 rounded-2xl w-[280px] shrink-0 whitespace-normal cursor-grab active:cursor-grabbing">
                     <div className="flex justify-between items-center mb-3">
                       <div className="flex items-center gap-2">
                         <span className="text-[12px] text-white font-medium">{review.name}</span>
                         {review.date && <span className="text-[10px] text-slate-400">{review.date}</span>}
                       </div>
-                      <div className="flex gap-1">
+                      <div className="flex gap-1 drop-shadow-[0_0_3px_rgba(var(--accent-main-rgb),0.8)]">
                         <Star className="w-3 h-3 fill-[var(--accent-main)] text-[var(--accent-main)]" />
                         <Star className="w-3 h-3 fill-[var(--accent-main)] text-[var(--accent-main)]" />
                         <Star className="w-3 h-3 fill-[var(--accent-main)] text-[var(--accent-main)]" />
@@ -1201,24 +1067,24 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate }) => {
                 ))}
               </div>
               {/* Тени по краям для красоты */}
-              <div className={`absolute top-0 bottom-0 left-0 w-8 transition-colors duration-1000 z-10 pointer-events-none ${isUltraVisible ? 'bg-gradient-to-r from-[var(--bg-modal)] to-transparent' : 'bg-gradient-to-r from-[var(--bg-grad-mid)] to-transparent'}`}></div>
-              <div className={`absolute top-0 bottom-0 right-0 w-8 transition-colors duration-1000 z-10 pointer-events-none ${isUltraVisible ? 'bg-gradient-to-l from-[var(--bg-modal)] to-transparent' : 'bg-gradient-to-l from-[var(--bg-grad-mid)] to-transparent'}`}></div>
+              <div className={`absolute top-0 bottom-0 left-0 w-8 transition-colors duration-1000 z-10 pointer-events-none bg-gradient-to-r from-[var(--bg-grad-mid)] to-transparent`}></div>
+              <div className={`absolute top-0 bottom-0 right-0 w-8 transition-colors duration-1000 z-10 pointer-events-none bg-gradient-to-l from-[var(--bg-grad-mid)] to-transparent`}></div>
             </div>
             
             {/* ФИКСИРОВАННАЯ КНОПКА (В самом конце скролла) */}
             <div className="flex flex-col items-center mt-6">
-              <MagneticWrapper onClick={() => window.location.href = CONTENT[lang].creator.actionLink} className="w-full cursor-pointer">
-                <div className="w-full glass-card text-white font-serif text-[11px] sm:text-[12px] uppercase tracking-[0.15em] py-5 rounded-2xl flex items-center justify-center gap-2 hover:bg-[rgba(var(--bg-card-rgb),0.8)] transition-all shadow-[0_0_20px_rgba(var(--accent-light-rgb),0.15)] border border-[rgba(var(--accent-light-rgb),0.4)] group active:scale-95">
-                  <Crown className="w-4 h-4 text-[var(--accent-main)] group-hover:scale-110 transition-transform" />
+              <div onClick={() => window.location.href = CONTENT[lang].creator.actionLink} className="w-full cursor-pointer active:scale-95 transition-transform">
+                <div className="w-full glass-card text-white font-serif text-[11px] sm:text-[12px] uppercase tracking-[0.15em] py-5 rounded-2xl flex items-center justify-center gap-2 hover:bg-[rgba(var(--bg-card-rgb),0.8)] group">
+                  <Crown className="w-4 h-4 text-[var(--accent-main)] group-hover:scale-110 transition-transform drop-shadow-[0_0_5px_rgba(var(--accent-main-rgb),0.8)]" />
                   {CONTENT[lang].creator.actionText} →
                 </div>
-              </MagneticWrapper>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Плавное затемнение сверху и снизу для красивого скролла */}
-        <div className={`absolute bottom-0 left-0 w-full h-12 transition-colors duration-1000 z-10 pointer-events-none ${isUltraVisible ? 'bg-gradient-to-t from-[var(--bg-modal)] to-transparent' : 'bg-gradient-to-t from-[var(--bg-grad-mid)] to-transparent'}`}></div>
+        <div className={`absolute bottom-0 left-0 w-full h-12 transition-colors duration-1000 z-10 pointer-events-none bg-gradient-to-t from-[var(--bg-grad-mid)] to-transparent`}></div>
       </div>
     </>
   );
@@ -1229,16 +1095,16 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate }) => {
 // ==========================================
 
 const App = () => {
-  const [lang, setLang] = useState('ru'); // Состояние текущего языка
-  const [isOpen, setIsOpen] = useState(false); // Новое состояние: открыт ли лендинг
+  const [lang, setLang] = useState('ru'); 
+  const [isOpen, setIsOpen] = useState(false); 
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
   const [glare, setGlare] = useState({ x: 50, y: 50, opacity: 0 });
-  const [showShare, setShowShare] = useState(false); // Состояние для модального окна
-  const [showPwaPrompt, setShowPwaPrompt] = useState(false); // Состояние для iOS плашки PWA
-  const [copied, setCopied] = useState(false);       // Состояние для копирования ссылки
-  const [isAudioPlaying, setIsAudioPlaying] = useState(false); // Состояние аудио
+  const [showShare, setShowShare] = useState(false); 
+  const [showPwaPrompt, setShowPwaPrompt] = useState(false); 
+  const [copied, setCopied] = useState(false);       
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false); 
+  const [sensorsEnabled, setSensorsEnabled] = useState(false); // Для iOS 13+
   
-  // Easter Egg States
   const [isGlitching, setIsGlitching] = useState(false);
   const [showEasterEgg, setShowEasterEgg] = useState(false);
   
@@ -1270,24 +1136,17 @@ const App = () => {
 
   const toggleGreetingAudio = (e) => {
     e.stopPropagation(); 
-    
     const audio = audioRef.current;
     if (!audio) return;
     
     if (audio.paused) {
       audio.volume = 1.0;
       audio.muted = false;
-      
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
-           if (!audioCtxRef.current) {
-             const AudioContext = window.AudioContext || window.webkitAudioContext;
-             audioCtxRef.current = new AudioContext();
-           }
-           if (audioCtxRef.current.state === 'suspended') {
-             audioCtxRef.current.resume();
-           }
+           if (!audioCtxRef.current) audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+           if (audioCtxRef.current.state === 'suspended') audioCtxRef.current.resume();
            if (!analyserRef.current) {
              analyserRef.current = audioCtxRef.current.createAnalyser();
              analyserRef.current.fftSize = 256;
@@ -1297,12 +1156,11 @@ const App = () => {
                sourceRef.current = audioCtxRef.current.createMediaElementSource(audio);
                sourceRef.current.connect(analyserRef.current);
                analyserRef.current.connect(audioCtxRef.current.destination);
-             } catch(e) { console.warn("Audio Context init blocked"); }
+             } catch(e) { }
            }
         }).catch(err => {
-          console.warn("Safari blocked play, applying fallback:", err);
           audio.load();
-          audio.play().catch(e => console.error("Fatal audio error:", e));
+          audio.play().catch(e => {});
         });
       }
     } else {
@@ -1334,31 +1192,32 @@ const App = () => {
     const handleGlobalMove = (e) => {
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      
       const x = (clientX / window.innerWidth - 0.5) * 80;
       const y = (clientY / window.innerHeight - 0.5) * 80;
-      
       document.documentElement.style.setProperty('--bg-x', `${-x}px`);
       document.documentElement.style.setProperty('--bg-y', `${-y}px`);
     };
-
     window.addEventListener('mousemove', handleGlobalMove);
     window.addEventListener('touchmove', handleGlobalMove);
-
     return () => {
       window.removeEventListener('mousemove', handleGlobalMove);
       window.removeEventListener('touchmove', handleGlobalMove);
     };
   }, []);
 
-  // Слушатель гироскопа устройства для создания эффекта жидкого стекла и наклона
+  // Первичная проверка сенсоров (для Android работает сразу)
+  useEffect(() => {
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission !== 'function') {
+      setSensorsEnabled(true);
+    }
+  }, []);
+
+  // Гироскоп для Liquid Glass и бликов
   useEffect(() => {
     const handleOrientation = (e) => {
       if (isOpen || isFlippingRef.current || !cardRef.current) return;
-      if (!e.gamma && !e.beta) return;
+      if (e.gamma === null || e.beta === null) return;
       
-      // gamma - это наклон влево/вправо (от -90 до 90)
-      // beta - это наклон вперед/назад (от -180 до 180). Обычно человек держит телефон под углом ~40 градусов.
       const rotateY = Math.max(-25, Math.min(25, e.gamma * 0.6));
       const rotateX = Math.max(-25, Math.min(25, (e.beta - 40) * 0.6));
       
@@ -1366,16 +1225,42 @@ const App = () => {
       setGlare({ x: 50 + rotateY * 2, y: 50 + rotateX * 2, opacity: 1 });
     };
 
-    if (typeof window !== 'undefined' && window.DeviceOrientationEvent) {
+    if (sensorsEnabled && typeof window !== 'undefined' && window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', handleOrientation);
     }
-
     return () => {
       if (typeof window !== 'undefined' && window.DeviceOrientationEvent) {
         window.removeEventListener('deviceorientation', handleOrientation);
       }
     };
-  }, [isOpen]);
+  }, [isOpen, sensorsEnabled]);
+
+  // Shake to Share (встряхивание)
+  useEffect(() => {
+    let lastUpdate = 0;
+    const handleShake = (e) => {
+      if (!e.accelerationIncludingGravity) return;
+      const acc = e.accelerationIncludingGravity;
+      const totalAcc = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
+      
+      if (totalAcc > 35) { // Сильное встряхивание
+        const now = Date.now();
+        if (now - lastUpdate > 1500) {
+          lastUpdate = now;
+          setShowShare(true);
+          if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+          playASMRSound('shake');
+        }
+      }
+    };
+
+    if (sensorsEnabled && typeof window !== 'undefined') {
+      window.addEventListener('devicemotion', handleShake);
+    }
+    return () => {
+      if (typeof window !== 'undefined') window.removeEventListener('devicemotion', handleShake);
+    };
+  }, [sensorsEnabled]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -1407,20 +1292,15 @@ const App = () => {
 
   const handlePointerMove = (e) => {
     if (isOpen || isFlippingRef.current || !cardRef.current) return;
-    
     const rect = cardRef.current.getBoundingClientRect();
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
     const x = clientX - rect.left;
     const y = clientY - rect.top;
-    
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    
     const rotateX = ((y - centerY) / centerY) * -25;
     const rotateY = ((x - centerX) / centerX) * 25;
-    
     const glareX = (x / rect.width) * 100;
     const glareY = (y / rect.height) * 100;
     
@@ -1434,34 +1314,48 @@ const App = () => {
     setGlare(prev => ({ ...prev, opacity: 0 }));
   };
 
-  const playFlipSound = () => {
+  // ASMR Звуки
+  const playASMRSound = (type = 'open') => {
     try {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       if (!AudioContext) return;
-      
-      if (!audioCtxRef.current) {
-        audioCtxRef.current = new AudioContext();
-      }
-      
+      if (!audioCtxRef.current) audioCtxRef.current = new AudioContext();
       const ctx = audioCtxRef.current;
       if (ctx.state === 'suspended') ctx.resume();
 
       const osc = ctx.createOscillator();
       const gainNode = ctx.createGain();
-
       osc.connect(gainNode);
       gainNode.connect(ctx.destination);
 
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(300, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.15);
-
-      gainNode.gain.setValueAtTime(0, ctx.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.05);
-      gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15);
-
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.15);
+      if (type === 'open') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(150, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.3);
+        gainNode.gain.setValueAtTime(0, ctx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.1);
+        gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.3);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.3);
+      } else if (type === 'close') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(400, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 0.15);
+        gainNode.gain.setValueAtTime(0, ctx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.05);
+        gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.15);
+      } else if (type === 'shake') {
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(800, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
+        gainNode.gain.setValueAtTime(0, ctx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.05);
+        gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.1);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.1);
+      }
     } catch (e) {}
   };
 
@@ -1474,23 +1368,38 @@ const App = () => {
     }, 800);
   };
 
-  const handleOpen = () => {
+  const handleOpen = async () => {
     if (isOpen || isGlitching) return;
     
-    playFlipSound();
+    // Запрашиваем права для iOS 13+ на гироскоп и акселерометр по клику
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      try {
+        const perm = await DeviceOrientationEvent.requestPermission();
+        if (perm === 'granted') setSensorsEnabled(true);
+      } catch (e) { }
+    } else {
+      setSensorsEnabled(true);
+    }
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+      try {
+        await DeviceMotionEvent.requestPermission();
+      } catch (e) { }
+    }
+
+    playASMRSound('open');
     isFlippingRef.current = true;
     
     setRotate({ x: 0, y: 0 });
     setGlare(prev => ({ ...prev, opacity: 0 }));
     
     setTimeout(() => { isFlippingRef.current = false; }, 1000);
-
     if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([30, 30, 40]); 
     setIsOpen(true);
   };
 
   const handleClose = (e) => {
     if (e) e.stopPropagation();
+    playASMRSound('close');
     setIsOpen(false);
     if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(20); 
   };
