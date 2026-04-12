@@ -1011,6 +1011,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
               transition: 'transform 0.1s linear'
             }}
             src={CONTENT[lang].creator.bgVideo}
+            poster={CONTENT[lang].creator.bgImage}
             autoPlay
             muted
             playsInline
@@ -1332,6 +1333,13 @@ const App = () => {
       });
     }
   }, []);
+
+  useEffect(() => {
+    // Невидимо подгружаем QR-код заранее, чтобы SW успел его кэшировать для офлайна
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=0&color=292524&bgcolor=ffffff&data=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : CONTENT[lang].creator.websiteLink)}`;
+    const img = new Image();
+    img.src = qrUrl;
+  }, [lang]);
 
   useEffect(() => {
     const ymId = CONTENT.analytics.yandexMetricaId;
