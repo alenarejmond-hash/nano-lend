@@ -1294,6 +1294,7 @@ const App = () => {
   const [waitingWorker, setWaitingWorker] = useState(null);
   const [copied, setCopied] = useState(false);       
   const [isAudioPlaying, setIsAudioPlaying] = useState(false); 
+  const [qrBase64, setQrBase64] = useState(null);
   
   const [isGlitching, setIsGlitching] = useState(false);
   const [showEasterEgg, setShowEasterEgg] = useState(false);
@@ -1307,38 +1308,24 @@ const App = () => {
   const isFlippingRef = useRef(false);
 
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').then(reg => {
-        if (reg.waiting) {
-          setWaitingWorker(reg.waiting);
-          setShowUpdatePrompt(true);
-        }
-        reg.addEventListener('updatefound', () => {
-          const newWorker = reg.installing;
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              setWaitingWorker(newWorker);
-              setShowUpdatePrompt(true);
-            }
-          });
-        });
-      }).catch(err => console.log('SW Reg Error:', err));
+    // Жестко кэшируем QR-код в память телефона (localStorage), чтобы он 100% работал без интернета
+    const url = typeof window !== 'undefined' ? window.location.href : CONTENT[lang].creator.websiteLink;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=0&color=292524&bgcolor=ffffff&data=${encodeURIComponent(url)}`;
+    
+    const cached = localStorage.getItem('cachedQR');
+    if (cached) setQrBase64(cached);
 
-      let refreshing = false;
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (!refreshing) {
-          refreshing = true;
-          window.location.reload();
-        }
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    // Невидимо подгружаем QR-код заранее, чтобы SW успел его кэшировать для офлайна
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=0&color=292524&bgcolor=ffffff&data=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : CONTENT[lang].creator.websiteLink)}`;
-    const img = new Image();
-    img.src = qrUrl;
+    fetch(qrUrl)
+      .then(res => res.blob())
+      .then(blob => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          localStorage.setItem('cachedQR', reader.result);
+          setQrBase64(reader.result);
+        };
+        reader.readAsDataURL(blob);
+      })
+      .catch(() => {});
   }, [lang]);
 
   useEffect(() => {
@@ -1802,7 +1789,7 @@ const App = () => {
             
             <div className="bg-white p-4 rounded-3xl mb-6 shadow-[0_0_40px_rgba(var(--accent-main-rgb),0.15)] flex items-center justify-center border border-transparent">
               <img 
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=0&color=292524&bgcolor=ffffff&data=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : CONTENT[lang].creator.websiteLink)}`} 
+                src={qrBase64 || `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=0&color=292524&bgcolor=ffffff&data=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : CONTENT[lang].creator.websiteLink)}`} 
                 alt="QR Code" 
                 className="w-[180px] h-[180px] object-contain rounded-lg"
               />
