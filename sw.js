@@ -1,4 +1,4 @@
-const CACHE_NAME = 'premium-world-v2'; // ВАЖНО: МЕНЯЙ ЭТУ ЦИФРУ (v3, v4...) ПРИ КАЖДОЙ ПРАВКЕ КОДА ВИЗИТКИ!
+const CACHE_NAME = 'premium-world-v3'; // ВАЖНО: МЕНЯЙ ЭТУ ЦИФРУ (v3, v4...) ПРИ КАЖДОЙ ПРАВКЕ КОДА ВИЗИТКИ!
 
 // Базовые файлы для кэша
 const PRECACHE_URLS = [
