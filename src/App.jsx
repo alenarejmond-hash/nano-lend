@@ -36,6 +36,7 @@ const CONTENT = {
   ru: {
     creator: {
       bgImage: '/bg-creator.jpg',
+      bgVideo: '/bg-creator.mp4',
       avatar: '/avatar-creator.jpg', 
       audioGreeting: '/greeting.mp3', 
       badge: 'DESIGN & CODE',
@@ -171,6 +172,7 @@ const CONTENT = {
   en: {
     creator: {
       bgImage: '/bg-creator.jpg',
+      bgVideo: '/bg-creator.mp4',
       avatar: '/avatar-creator.jpg', 
       audioGreeting: '/greeting.mp3', 
       badge: 'DESIGN & CODE',
@@ -995,14 +997,18 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
           {/* Убрали белый свет от background. Оставляем только базовый цвет под фото */}
           <div className="absolute inset-0 bg-[var(--bg-card)]"></div>
 
-          {/* PARALLAX IMAGE BACKGROUND (Отвечает за глубину картинки) */}
-          <div 
-            className="absolute inset-0 w-full h-full bg-cover bg-center grayscale-[0.3]"
+          {/* PARALLAX VIDEO BACKGROUND (Отвечает за глубину картинки/видео) */}
+          <video 
+            className="absolute inset-0 w-full h-full object-cover grayscale-[0.3]"
             style={{ 
-              backgroundImage: `url(${CONTENT[lang].creator.bgImage})`,
               transform: isOpen ? 'scale(1)' : `scale(1.15) translate(${rotate.y * 0.15}px, ${-rotate.x * 0.15}px)`,
               transition: 'transform 0.1s linear'
-            }} 
+            }}
+            src={CONTENT[lang].creator.bgVideo}
+            autoPlay
+            loop
+            muted
+            playsInline
           />
 
           {/* Темный градиент поверх фото (Чистое затемнение от низа до фамилии) */}
