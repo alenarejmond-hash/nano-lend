@@ -995,7 +995,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
       {/* 1. ЗАКРЫТОЕ СОСТОЯНИЕ (ЛИЦЕВАЯ СТОРОНА) - 3D И ЖИДКОЕ СТЕКЛО */}
       {/* ========================================================================= */}
       <div 
-        className={`absolute inset-0 w-full h-full transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'opacity-0 pointer-events-none scale-110' : 'opacity-100 scale-100'}`}
+        className={`absolute inset-0 w-full h-full transition-[opacity,transform] duration-800 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform ${isOpen ? 'opacity-0 pointer-events-none scale-110' : 'opacity-100 scale-100'}`}
         style={{ transformStyle: 'preserve-3d' }}
       >
         {/* BACKGROUND & IMAGE (Clipped to prevent corners from sticking out) */}
@@ -1086,7 +1086,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
       {/* ========================================================================= */}
       {/* 2. ОТКРЫТОЕ СОСТОЯНИЕ (СКРОЛЛ-ЛЕНДИНГ) */}
       {/* ========================================================================= */}
-      <div className={`absolute inset-0 w-full h-full clip-corners overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-[var(--bg-grad-mid)] border-[rgba(var(--accent-main-rgb),0.4)] border-0 sm:border flex flex-col text-white transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto sm:rounded-[2.5rem] rounded-none' : 'opacity-0 translate-y-10 scale-95 pointer-events-none sm:rounded-[2.5rem] rounded-[2rem]'}`}>
+      <div className={`absolute inset-0 w-full h-full clip-corners overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-[var(--bg-grad-mid)] border-[rgba(var(--accent-main-rgb),0.4)] border-0 sm:border flex flex-col text-white transition-[opacity,transform,border-radius] duration-800 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform ${isOpen ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto sm:rounded-[2.5rem] rounded-none' : 'opacity-0 translate-y-10 scale-95 pointer-events-none sm:rounded-[2.5rem] rounded-[2rem]'}`}>
         
         {/* === ФОНОВАЯ НАДПИСЬ PREMIUM (ФИКСИРОВАННАЯ И ОБЪЕМНАЯ) === */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[22vw] sm:text-[18vw] md:text-[20vw] font-black pointer-events-none z-0 select-none tracking-tighter opacity-80 w-full text-center" 
@@ -1306,6 +1306,34 @@ const App = () => {
   const reqRef = useRef(null);
   const audioRef = useRef(null); 
   const isFlippingRef = useRef(false);
+
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then(reg => {
+        if (reg.waiting) {
+          setWaitingWorker(reg.waiting);
+          setShowUpdatePrompt(true);
+        }
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              setWaitingWorker(newWorker);
+              setShowUpdatePrompt(true);
+            }
+          });
+        });
+      }).catch(err => console.log('SW Reg Error:', err));
+
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+          refreshing = true;
+          window.location.reload();
+        }
+      });
+    }
+  }, []);
 
   useEffect(() => {
     // Жестко кэшируем QR-код в память телефона (localStorage), чтобы он 100% работал без интернета
@@ -1656,7 +1684,7 @@ const App = () => {
       {/* КОНТЕЙНЕР ВИЗИТКИ */}
       <div 
         ref={cardRef}
-        className={`relative z-10 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'w-full h-[100dvh] sm:max-w-[480px] sm:h-[90dvh] sm:rounded-[2.5rem] rounded-none' : 'w-full max-h-[85dvh] aspect-[1/1.6] sm:aspect-[1/1.5] sm:rounded-[2.5rem] rounded-[2rem] cursor-pointer group touch-none'} ${!isOpen && glare.opacity === 0 ? 'animate-float' : ''}`}
+        className={`relative z-10 transition-[max-width,height,width,border-radius,padding] duration-800 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform ${isOpen ? 'w-full h-[100dvh] sm:max-w-[480px] sm:h-[90dvh] sm:rounded-[2.5rem] rounded-none' : 'w-full max-h-[85dvh] aspect-[1/1.6] sm:aspect-[1/1.5] sm:rounded-[2.5rem] rounded-[2rem] cursor-pointer group touch-none'} ${!isOpen && glare.opacity === 0 ? 'animate-float' : ''}`}
         style={{ maxWidth: isOpen ? '100%' : 'min(22rem, 85vw, 55vh)' }}
         onClick={!isOpen ? handleOpen : undefined}
         onMouseMove={handlePointerMove}
@@ -1676,7 +1704,7 @@ const App = () => {
           >
             {/* СВЕЧЕНИЕ ВОКРУГ ВИЗИТКИ (Находится позади за счет translateZ) */}
             <div
-              className={`absolute inset-0 rounded-[2.5rem] bg-[var(--accent-main)] blur-[40px] transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] pointer-events-none ${isOpen ? 'opacity-10 scale-[1.02]' : 'opacity-[0.35] scale-[0.98]'}`}
+              className={`absolute inset-0 rounded-[2.5rem] bg-[var(--accent-main)] blur-[40px] transition-all duration-800 ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-none ${isOpen ? 'opacity-10 scale-[1.02]' : 'opacity-[0.35] scale-[0.98]'}`}
               style={{ transform: 'translateZ(-20px)' }}
             ></div>
 
