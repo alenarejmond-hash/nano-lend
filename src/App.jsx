@@ -1006,7 +1006,6 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
             }}
             src={CONTENT[lang].creator.bgVideo}
             autoPlay
-            loop
             muted
             playsInline
           />
@@ -1025,7 +1024,12 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
           }}
         >
           <div className="flex justify-between items-start pointer-events-auto">
-            <div onClick={handleCrownClick} className="bg-[rgba(var(--bg-grad-dark-rgb),0.8)] backdrop-blur-md px-4 py-2 rounded-full border border-[rgba(var(--accent-main-rgb),0.3)] flex items-center gap-2 cursor-pointer active:scale-95 transition-transform">
+            <div 
+              onClick={handleCrownClick} 
+              onMouseMove={(e) => e.stopPropagation()} 
+              onTouchMove={(e) => e.stopPropagation()}
+              className="bg-[rgba(var(--bg-grad-dark-rgb),0.8)] backdrop-blur-md px-4 py-2 rounded-full border border-[rgba(var(--accent-main-rgb),0.3)] flex items-center gap-2 cursor-pointer active:scale-95 transition-transform"
+            >
               <Crown className="w-4 h-4 text-[var(--accent-main)] drop-shadow-[0_0_5px_rgba(var(--accent-main-rgb),0.8)]" />
               <span className="text-xs font-serif tracking-widest uppercase text-slate-200">{CONTENT[lang].creator.badge}</span>
             </div>
