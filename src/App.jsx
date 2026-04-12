@@ -166,7 +166,10 @@ const CONTENT = {
       installStep2_2: '«На экран "Домой"»',
       installStep2_3: 'в появившемся списке.',
       done: 'Готово',
-      saveContact: 'Сохранено с цифровой визитки'
+      saveContact: 'Сохранено с цифровой визитки',
+      updateTitle: 'Доступно обновление',
+      updateDesc: 'Выпущена новая версия digital-мира. Обновите, чтобы загрузить последние изменения.',
+      updateBtn: 'ОБНОВИТЬ СЕЙЧАС'
     }
   },
   en: {
@@ -302,7 +305,10 @@ const CONTENT = {
       installStep2_2: '"Add to Home Screen"',
       installStep2_3: ' from the list.',
       done: 'Done',
-      saveContact: 'Saved from digital business card'
+      saveContact: 'Saved from digital business card',
+      updateTitle: 'Update Available',
+      updateDesc: 'A new version of the digital world is out. Update to load the latest changes.',
+      updateBtn: 'UPDATE NOW'
     }
   },
   analytics: {
@@ -1283,6 +1289,8 @@ const App = () => {
   const [glare, setGlare] = useState({ x: 50, y: 50, opacity: 0 });
   const [showShare, setShowShare] = useState(false); 
   const [showPwaPrompt, setShowPwaPrompt] = useState(false); 
+  const [showUpdatePrompt, setShowUpdatePrompt] = useState(false);
+  const [waitingWorker, setWaitingWorker] = useState(null);
   const [copied, setCopied] = useState(false);       
   const [isAudioPlaying, setIsAudioPlaying] = useState(false); 
   
@@ -1296,6 +1304,34 @@ const App = () => {
   const reqRef = useRef(null);
   const audioRef = useRef(null); 
   const isFlippingRef = useRef(false);
+
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then(reg => {
+        if (reg.waiting) {
+          setWaitingWorker(reg.waiting);
+          setShowUpdatePrompt(true);
+        }
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              setWaitingWorker(newWorker);
+              setShowUpdatePrompt(true);
+            }
+          });
+        });
+      }).catch(err => console.log('SW Reg Error:', err));
+
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+          refreshing = true;
+          window.location.reload();
+        }
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const ymId = CONTENT.analytics.yandexMetricaId;
@@ -1530,6 +1566,14 @@ const App = () => {
       } catch (err) {}
     } else {
       handleCopy();
+    }
+  };
+
+  const handleUpdate = () => {
+    if (waitingWorker) {
+      waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+    } else {
+      window.location.reload(true);
     }
   };
 
@@ -1872,6 +1916,27 @@ const App = () => {
               className="w-full bg-gradient-to-r from-[var(--accent-main)] to-[var(--accent-light)] text-slate-900 font-bold py-4 px-4 rounded-2xl transition-colors shadow-[0_0_20px_rgba(var(--accent-light-rgb),0.2)] border border-[rgba(var(--accent-light-rgb),0.5)] active:scale-95"
             >
               {CONTENT[lang].ui.done}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* МОДАЛЬНОЕ ОКНО ОБНОВЛЕНИЯ */}
+      {showUpdatePrompt && (
+        <div className="fixed inset-0 z-[130] flex items-center justify-center p-4 bg-[rgba(var(--bg-modal-rgb),0.8)] backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="w-full max-w-sm bg-[var(--bg-card)] rounded-[2.5rem] p-6 sm:p-8 flex flex-col items-center shadow-[0_0_50px_rgba(var(--accent-main-rgb),0.2)] border border-[rgba(var(--accent-main-rgb),0.5)] animate-in zoom-in-95 duration-300">
+            <div className="w-16 h-16 rounded-full bg-[rgba(var(--accent-main-rgb),0.1)] flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.2)] animate-pulse">
+              <Rocket className="w-8 h-8 text-[var(--accent-main)]" />
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2 text-center tracking-wide">{CONTENT[lang].ui.updateTitle}</h3>
+            <p className="text-sm text-slate-300 text-center mb-8 leading-relaxed px-2">
+              {CONTENT[lang].ui.updateDesc}
+            </p>
+            <button 
+              onClick={handleUpdate}
+              className="w-full bg-gradient-to-r from-[var(--accent-main)] to-[var(--accent-light)] text-slate-900 font-bold py-4 px-4 rounded-xl transition-all active:scale-95 shadow-[0_0_20px_rgba(var(--accent-main-rgb),0.4)]"
+            >
+              {CONTENT[lang].ui.updateBtn}
             </button>
           </div>
         </div>
