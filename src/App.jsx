@@ -1275,7 +1275,6 @@ const App = () => {
   const [showPwaPrompt, setShowPwaPrompt] = useState(false); 
   const [copied, setCopied] = useState(false);       
   const [isAudioPlaying, setIsAudioPlaying] = useState(false); 
-  const [sensorsEnabled, setSensorsEnabled] = useState(false); 
   
   const [isGlitching, setIsGlitching] = useState(false);
   const [showEasterEgg, setShowEasterEgg] = useState(false);
@@ -1379,32 +1378,6 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    let lastUpdate = 0;
-    const handleShake = (e) => {
-      if (!e.accelerationIncludingGravity) return;
-      const acc = e.accelerationIncludingGravity;
-      const totalAcc = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
-      
-      if (totalAcc > 35) { 
-        const now = Date.now();
-        if (now - lastUpdate > 1500) {
-          lastUpdate = now;
-          setShowShare(true);
-          if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-          playASMRSound('shake');
-        }
-      }
-    };
-
-    if (sensorsEnabled && typeof window !== 'undefined') {
-      window.addEventListener('devicemotion', handleShake);
-    }
-    return () => {
-      if (typeof window !== 'undefined') window.removeEventListener('devicemotion', handleShake);
-    };
-  }, [sensorsEnabled]);
-
-  useEffect(() => {
     if (typeof window !== 'undefined') {
       const manifest = {
         name: `${CONTENT[lang].creator.name1} ${CONTENT[lang].creator.name2} | ${CONTENT[lang].creator.role}`,
@@ -1487,15 +1460,6 @@ const App = () => {
         gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15);
         osc.start(ctx.currentTime);
         osc.stop(ctx.currentTime + 0.15);
-      } else if (type === 'shake') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(1000, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.5);
-        gainNode.gain.setValueAtTime(0, ctx.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 0.05);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.5);
       }
     } catch (e) {}
   };
@@ -1512,16 +1476,6 @@ const App = () => {
   const handleOpen = async () => {
     if (isOpen || isGlitching) return;
     
-    // Запрашиваем только акселерометр для тряски (DeviceMotionEvent)
-    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-      try {
-        const perm = await DeviceMotionEvent.requestPermission();
-        if (perm === 'granted') setSensorsEnabled(true);
-      } catch (e) { }
-    } else {
-      setSensorsEnabled(true);
-    }
-
     playASMRSound('open');
     isFlippingRef.current = true;
     
