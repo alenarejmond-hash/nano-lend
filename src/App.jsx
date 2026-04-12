@@ -824,18 +824,36 @@ const FAQAccordion = ({ items }) => {
 const TariffCarousel = ({ tariffs }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(null);
+  const scrollLockRef = useRef(false);
 
   const handleStart = (clientX) => setTouchStart(clientX);
   const handleEnd = (clientX) => {
     if (touchStart === null) return;
     const diff = touchStart - clientX;
-    if (diff > 50) setActiveIndex(Math.min(tariffs.length - 1, activeIndex + 1));
-    if (diff < -50) setActiveIndex(Math.max(0, activeIndex - 1));
+    if (diff > 50) setActiveIndex(prev => Math.min(tariffs.length - 1, prev + 1));
+    if (diff < -50) setActiveIndex(prev => Math.max(0, prev - 1));
     setTouchStart(null);
   };
 
+  const handleWheel = (e) => {
+    // Реагируем только на горизонтальный скролл (например, тачпадом)
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      if (scrollLockRef.current) return;
+      
+      if (e.deltaX > 20) {
+        setActiveIndex(prev => Math.min(tariffs.length - 1, prev + 1));
+        scrollLockRef.current = true;
+        setTimeout(() => { scrollLockRef.current = false; }, 400);
+      } else if (e.deltaX < -20) {
+        setActiveIndex(prev => Math.max(0, prev - 1));
+        scrollLockRef.current = true;
+        setTimeout(() => { scrollLockRef.current = false; }, 400);
+      }
+    }
+  };
+
   return (
-    <div className="w-full flex flex-col items-center">
+    <div className="w-full flex flex-col items-center select-none">
       <div 
         className="relative w-full h-[240px] flex items-center justify-center overflow-visible"
         style={{ perspective: '1200px', touchAction: 'pan-y' }}
@@ -844,6 +862,7 @@ const TariffCarousel = ({ tariffs }) => {
         onMouseDown={(e) => handleStart(e.clientX)}
         onMouseUp={(e) => handleEnd(e.clientX)}
         onMouseLeave={(e) => { if(touchStart !== null) handleEnd(e.clientX); }}
+        onWheel={handleWheel}
       >
         {tariffs.map((tariff, idx) => {
           const offset = idx - activeIndex;
@@ -928,11 +947,9 @@ const TariffCarousel = ({ tariffs }) => {
 // ОСНОВНАЯ КАРТОЧКА С ЛЕНДИНГОМ
 // ==========================================
 const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
-  const [isUltraVisible, setIsUltraVisible] = useState(false);
   const [crownClicks, setCrownClicks] = useState(0);
   
   const scrollContainerRef = useRef(null);
-  const ultraRef = useRef(null);
 
   const handleScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
@@ -940,14 +957,6 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
     e.target.style.setProperty('--scroll-y', `${scrollTop}px`);
     e.target.style.setProperty('--scroll-progress', `${progress}%`);
   };
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      setIsUltraVisible(entry.isIntersecting);
-    }, { threshold: 0.5 });
-    if (ultraRef.current) observer.observe(ultraRef.current);
-    return () => observer.disconnect();
-  }, []);
 
   const handlePromoClick = (e) => {
     e.preventDefault();
@@ -969,7 +978,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
     { icon: Diamond, title: CONTENT[lang].views.nano.title, desc: CONTENT[lang].views.nano.desc },
     { icon: Rocket, title: CONTENT[lang].views.pro.title, desc: CONTENT[lang].views.pro.desc },
     { icon: Globe, title: CONTENT[lang].views.lend.title, desc: CONTENT[lang].views.lend.desc },
-    { icon: Crown, title: CONTENT[lang].views.ultra.title, desc: CONTENT[lang].views.ultra.desc, ref: ultraRef, tooltip: CONTENT[lang].tooltips.ultra }
+    { icon: Crown, title: CONTENT[lang].views.ultra.title, desc: CONTENT[lang].views.ultra.desc, tooltip: CONTENT[lang].tooltips.ultra }
   ];
 
   return (
@@ -1063,7 +1072,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
       <div className={`absolute inset-0 w-full h-full clip-corners overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-[var(--bg-grad-mid)] border-[rgba(var(--accent-main-rgb),0.4)] border-0 sm:border flex flex-col text-white transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto sm:rounded-[2.5rem] rounded-none' : 'opacity-0 translate-y-10 scale-95 pointer-events-none sm:rounded-[2.5rem] rounded-[2rem]'}`}>
         
         {/* === ФОНОВАЯ НАДПИСЬ PREMIUM (ФИКСИРОВАННАЯ И ОБЪЕМНАЯ) === */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[15vw] sm:text-[18vw] md:text-[20vw] font-black pointer-events-none z-0 select-none tracking-tight opacity-80 w-full text-center" 
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[22vw] sm:text-[18vw] md:text-[20vw] font-black pointer-events-none z-0 select-none tracking-tighter opacity-80 w-full text-center" 
              style={{
                background: `linear-gradient(180deg, rgba(var(--accent-main-rgb), 0.08) 0%, rgba(var(--accent-main-rgb), 0.01) 100%)`,
                WebkitBackgroundClip: 'text',
@@ -1081,9 +1090,12 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
         <div className="absolute -bottom-[30%] -right-[30%] w-[140%] aspect-square rounded-full border-[1.5px] border-[rgba(var(--accent-main-rgb),0.1)] pointer-events-none transition-colors duration-1000" style={{ animation: 'esoteric-slow-drift-2 100s linear infinite', transformOrigin: '55% 45%' }}></div>
         <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] aspect-square rounded-full blur-[60px] pointer-events-none transition-colors duration-1000 bg-[rgba(var(--accent-main-rgb),0.1)]`}></div>
 
-        {/* === ПЛАВАЮЩАЯ ШАПКА === */}
-        <div className={`shrink-0 pt-8 pb-4 px-6 flex justify-between items-center relative z-20 transition-colors duration-1000 bg-[var(--bg-grad-mid)]`}>
-          <div className="flex items-center gap-3">
+        {/* Плавное затемнение сверху для красивого ухода текста ПОД шапку */}
+        <div className={`absolute top-0 left-0 w-full h-24 transition-colors duration-1000 z-20 pointer-events-none bg-gradient-to-b from-[var(--bg-grad-mid)] via-[rgba(var(--bg-grad-mid-rgb),0.8)] to-transparent`}></div>
+
+        {/* === ПЛАВАЮЩАЯ ШАПКА (Абсолютная, прозрачная) === */}
+        <div className={`absolute top-0 left-0 w-full pt-8 pb-4 px-6 flex justify-between items-center z-30 transition-colors duration-1000 pointer-events-none`}>
+          <div className="flex items-center gap-3 pointer-events-auto">
             <div className="glass-card px-3 py-1.5 rounded-full flex items-center gap-2">
               <Crown className={`w-3.5 h-3.5 transition-colors duration-1000 text-[var(--accent-main)] drop-shadow-[0_0_5px_rgba(var(--accent-main-rgb),0.8)]`} />
               <span className="text-[10px] font-serif tracking-widest uppercase text-slate-200">{CONTENT[lang].creator.badge}</span>
@@ -1091,7 +1103,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
           </div>
           <button 
             onClick={onClose} 
-            className="w-9 h-9 rounded-full glass-card flex items-center justify-center text-[var(--accent-main)] hover:scale-105 active:scale-95 transition-all shadow-[0_0_15px_rgba(var(--accent-main-rgb),0.3)]"
+            className="pointer-events-auto w-9 h-9 rounded-full glass-card flex items-center justify-center text-[var(--accent-main)] hover:scale-105 active:scale-95 transition-all shadow-[0_0_15px_rgba(var(--accent-main-rgb),0.3)]"
           >
             <X className="w-4 h-4 drop-shadow-[0_0_5px_rgba(var(--accent-main-rgb),0.8)]" />
           </button>
@@ -1099,7 +1111,7 @@ const CreatorCard = ({ lang, isOpen, onClose, onEasterEgg, rotate, glare }) => {
 
         {/* === СКРОЛЛ-КОНТЕНТ === */}
         <div 
-          className="flex-1 overflow-y-auto overflow-x-hidden custom-scroll px-6 pb-28 relative z-10 flex flex-col gap-10"
+          className="flex-1 overflow-y-auto overflow-x-hidden custom-scroll px-6 pt-24 pb-28 relative z-10 flex flex-col gap-10"
           onScroll={handleScroll}
           ref={scrollContainerRef}
         >
